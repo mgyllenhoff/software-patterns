@@ -1,0 +1,3 @@
+/Users/mgyllenhoff/Library/CloudStorage/OneDrive-JohnsHopkins/Software Patterns/Assignments/build/CMakeFiles/Patterns.dir
+/Users/mgyllenhoff/Library/CloudStorage/OneDrive-JohnsHopkins/Software Patterns/Assignments/build/CMakeFiles/edit_cache.dir
+/Users/mgyllenhoff/Library/CloudStorage/OneDrive-JohnsHopkins/Software Patterns/Assignments/build/CMakeFiles/rebuild_cache.dir
