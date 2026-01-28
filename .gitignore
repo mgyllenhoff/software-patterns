@@ -1,0 +1,21 @@
+# Build directory
+build/
+
+# CMake generated files (if build/ doesn't catch everything)
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Compiled object files
+*.o
+*.o.d
+
+# Executables
+*.exe
+*.out
+    Patterns
+
+# IDE and editor files
+.vscode/
