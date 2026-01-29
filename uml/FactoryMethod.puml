@@ -1,0 +1,98 @@
+@startuml
+' =========================
+' Factory Method DOM Diagram
+' =========================
+
+skinparam classAttributeIconSize 0
+
+' -------------------------
+' Products (interfaces)
+' -------------------------
+interface Element <<Product>> {
+    +getAttribute(name: string): string
+    +getAttributeNode(name: string): Attr
+    +getElementsByTagName(tagName: string): NodeList
+    +getTagName(): string
+    +hasAttribute(name: string): bool
+    +removeAttribute(name: string)
+    +removeAttributeNode(oldAttr: Attr): Attr
+    +setAttribute(name: string, value: string)
+    +setAttributeNode(newAttr: Attr): Attr
+}
+
+interface Text <<Product>> {
+    +getName(): string
+    +getData(): string
+    +getValue(): string
+    +setData(value: string)
+    +setValue(value: string)
+    +getLength(): int
+    +substringData(offset: int, count: int): string
+    +appendData(arg: string)
+    +insertData(offset: int, arg: string)
+    +deleteData(offset: int, count: int)
+    +replaceData(offset: int, count: int, arg: string)
+    +splitText(offset: int): Text
+}
+
+interface Attr <<Product>> {
+    +getName(): string
+    +getValue(): string
+    +setValue(value: string)
+    +getOwnerElement(): Element
+}
+
+' -------------------------
+' Concrete Products
+' -------------------------
+class Element_Impl <<ConcreteProduct>> {
+}
+
+class Text_Impl <<ConcreteProduct>> {
+}
+
+class Attr_Impl <<ConcreteProduct>> {
+}
+
+' -------------------------
+' Creator
+' -------------------------
+abstract class Document <<Creator>> {
+    +{abstract} createElement(tagName: string): Element
+    +{abstract} createTextNode(data: string): Text
+    +{abstract} createAttribute(name: string): Attr
+    +{abstract} getDocumentElement(): Element
+}
+
+' -------------------------
+' Concrete Creator
+' -------------------------
+class Document_Impl <<ConcreteCreator>> {
+    +createElement(tagName: string): Element
+    +createTextNode(data: string): Text
+    +createAttribute(name: string): Attr
+    +getDocumentElement(): Element
+}
+
+' =========================
+' Relationships
+' =========================
+
+' Implementation relationships (dashed lines with hollow arrow)
+Document_Impl --|> Document
+
+' Element_Impl ..|> Element
+' Text_Impl ..|> Text
+' Attr_Impl ..|> Attr
+
+' Dependency relationships (dashed arrows)
+Document_Impl ..> Element_Impl : <<creates>>
+Document_Impl ..> Text_Impl : <<creates>>
+Document_Impl ..> Attr_Impl : <<creates>>
+
+' Factory method declarations
+Document ..> Element : <<creates>>
+Document ..> Text : <<creates>>
+Document ..> Attr : <<creates>>
+
+@enduml
