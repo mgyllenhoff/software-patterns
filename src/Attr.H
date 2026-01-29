@@ -10,6 +10,7 @@ namespace dom
 	class Document;
 	class Element;
 
+	// Product
 	class Attr : public virtual Node
 	{
 	public:
@@ -22,6 +23,7 @@ namespace dom
 	};
 };
 
+// ConcreteProduct
 class Attr_Impl : public virtual dom::Attr, Node_Impl
 {
 protected:

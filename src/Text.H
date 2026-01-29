@@ -9,6 +9,7 @@ namespace dom
 {
 	class Document;
 
+	// Product
 	class Text : public virtual Node
 	{
 	public:
@@ -29,6 +30,7 @@ namespace dom
 	};
 };
 
+// ConcreteProduct
 class Text_Impl : public virtual dom::Text, Node_Impl
 {
 protected:

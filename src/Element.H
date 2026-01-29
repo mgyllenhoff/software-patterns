@@ -12,6 +12,7 @@ namespace dom
 	class NodeList;
 	class Document;
 
+	// Product
 	class Element : public virtual Node
 	{
 	public:
@@ -32,6 +33,7 @@ namespace dom
 	};
 };
 
+// ConcreteProduct
 class Element_Impl : public virtual dom::Element, Node_Impl
 {
 private:
