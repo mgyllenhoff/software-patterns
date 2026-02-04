@@ -18,6 +18,11 @@ target_sources(Patterns PUBLIC
 	Test.C
 	Text.C
 	Text.H
+	MinimalNodeProcessor.C
+	MinimalNodeProcessor.H
+	PrettyNodeProcessor.C
+	PrettyNodeProcessor.H
+	NodeProcessor.H
 	XMLSerializer.C
 	XMLSerializer.H
 	XMLTokenizer.C

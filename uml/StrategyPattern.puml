@@ -1,0 +1,38 @@
+@startuml
+!pragma layout smetana
+
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+
+class XMLSerializer <<Context>> {
+  --
+  + serializePretty(node : Node*) : void
+  + serializeMinimal(node : Node*) : void
+}
+
+interface NodeProcessor <<Strategy>> {
+  + processDocument(doc : Document*) : void
+  + processElement(elem : Element*) : void
+  + processAttr(attr : Attr*) : void
+  + processText(text : Text*) : void
+}
+
+class PrettyNodeProcessor <<ConcreteStrategy>> {
+  + processDocument(doc : Document*) : void
+  + processElement(elem : Element*) : void
+  + processAttr(attr : Attr*) : void
+  + processText(text : Text*) : void
+}
+
+class MinimalNodeProcessor <<ConcreteStrategy>> {
+  + processDocument(doc : Document*) : void
+  + processElement(elem : Element*) : void
+  + processAttr(attr : Attr*) : void
+  + processText(text : Text*) : void
+}
+
+XMLSerializer "*" --> "1" NodeProcessor
+NodeProcessor <|.. PrettyNodeProcessor
+NodeProcessor <|.. MinimalNodeProcessor
+
+@enduml
