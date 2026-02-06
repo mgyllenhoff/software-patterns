@@ -16,13 +16,13 @@ void XMLSerializer::serialize(dom::Node* node, NodeProcessor& processor)
 // Creates and uses PrettyNodeProcessor strategy
 void XMLSerializer::serializePretty(dom::Node* node)
 {
-    PrettyNodeProcessor processor(file);
+    PrettyNodeProcessor processor(output);
     serialize(node, processor);
 }
 
 // Creates and uses MinimalNodeProcessor strategy
 void XMLSerializer::serializeMinimal(dom::Node* node)
 {
-    MinimalNodeProcessor processor(file);
+    MinimalNodeProcessor processor(output);
     serialize(node, processor);
 }

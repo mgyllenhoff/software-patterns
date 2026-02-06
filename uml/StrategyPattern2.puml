@@ -1,0 +1,37 @@
+@startuml
+!pragma layout smetana
+
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+
+class XMLSerializer <<Context>> {
+  --
+  + XMLSerializer(out : ostream&)
+  + XMLSerializer(filename : string)
+}
+
+interface "std::ostream" <<Strategy>> {
+  + operator<<() : ostream&
+  + write() : ostream&
+  + put() : ostream&
+}
+
+class "std::cout" <<ConcreteStrategy>> {
+}
+
+class "std::cerr" <<ConcreteStrategy>> {
+}
+
+class "std::ofstream" <<ConcreteStrategy>> {
+}
+
+class "std::ostringstream" <<ConcreteStrategy>> {
+}
+
+XMLSerializer "*" --> "1" "std::ostream"
+"std::ostream" <|.. "std::cout"
+"std::ostream" <|.. "std::cerr"
+"std::ostream" <|.. "std::ofstream"
+"std::ostream" <|.. "std::ostringstream"
+
+@enduml

@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <iostream>
+#include <sstream>
 #include "Attr.H"
 #include "Document.H"
 #include "Element.H"
@@ -10,6 +12,7 @@
 void testTokenizer(int argc, char** argv);
 void testSerializer(int argc, char** argv);
 void testValidator(int argc, char** argv);
+void testSerializerStrategies(int argc, char** argv);
 
 void printUsage(void)
 {
@@ -17,6 +20,7 @@ void printUsage(void)
 	printf("\tTest t [file] ...\n");
 	printf("\tTest s [file1] [file2]\n");
 	printf("\tTest v [file]\n");
+	printf("\tTest o [file]\n");
 }
 
 int main(int argc, char** argv)
@@ -40,6 +44,10 @@ int main(int argc, char** argv)
 	case 'V':
 	case 'v':
 		testValidator(argc, argv);
+		break;
+	case 'O':
+	case 'o':
+		testSerializerStrategies(argc, argv);
 		break;
 	}
 }
@@ -286,4 +294,70 @@ void testValidator(int argc, char** argv)
 	xmlSerializer.serializePretty(document);
 
 	// delete Document and tree.
+}
+
+void testSerializerStrategies(int argc, char** argv)
+{
+	//
+	// Create test document
+	//
+	dom::Document* document = new Document_Impl;
+	dom::Element* root = document->createElement("document");
+	document->appendChild(root);
+
+	dom::Element* child = document->createElement("element");
+	dom::Attr* attr = document->createAttribute("attribute");
+	attr->setValue("attribute value");
+	child->setAttributeNode(attr);
+	root->appendChild(child);
+
+	child = document->createElement("element");
+	dom::Text* text = document->createTextNode("Element Value");
+	child->appendChild(text);
+	root->appendChild(child);
+
+	printf("=== Testing Output Stream Strategies ===\n\n");
+
+	// Client selects ConcreteStrategy: std::cout
+	printf("1. Serializing to CONSOLE (std::cout):\n");
+	printf("-------------------------------------------\n");
+	// Context with ConcreteStrategy (std::cout)
+	XMLSerializer consoleSerializer(std::cout);
+	consoleSerializer.serializePretty(document);
+	printf("\n");
+
+	// Client selects ConcreteStrategy: std::ostringstream
+	printf("2. Serializing to STRING STREAM (std::ostringstream):\n");
+	printf("-------------------------------------------\n");
+	// ConcreteStrategy
+	std::ostringstream stringStream;
+	// Context with ConcreteStrategy (std::ostringstream)
+	XMLSerializer stringSerializer(stringStream);
+	stringSerializer.serializeMinimal(document);
+	std::string xmlString = stringStream.str();
+	printf("Captured XML in string:\n%s\n\n", xmlString.c_str());
+
+	// Client selects ConcreteStrategy: std::fstream (via filename)
+	if (argc >= 3)
+	{
+		printf("3. Serializing to FILE (%s):\n", argv[2]);
+		printf("-------------------------------------------\n");
+		// Context with ConcreteStrategy (std::fstream created internally)
+		XMLSerializer fileSerializer(argv[2]);
+		fileSerializer.serializePretty(document);
+		printf("XML written to file: %s\n\n", argv[2]);
+	}
+
+	// Client selects ConcreteStrategy: std::cerr
+	printf("4. Serializing to ERROR STREAM (std::cerr):\n");
+	printf("-------------------------------------------\n");
+	// Context with ConcreteStrategy (std::cerr)
+	XMLSerializer errorSerializer(std::cerr);
+	errorSerializer.serializeMinimal(document);
+	printf("\n");
+
+	printf("\n=== All output stream strategies tested successfully! ===\n");
+
+	// Cleanup
+	delete document;
 }

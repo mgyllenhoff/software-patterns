@@ -1,0 +1,52 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class Client {
+  +ship(p : Package)
+  +getWeight(p : Package) : float
+}
+
+abstract class Package {
+  +ship()
+  +getWeight() : float
+  +add(p : Package)
+  +remove(p : Package)
+  +getChild(i : int) : Package
+}
+
+class Item {
+  -weight : float
+  +ship()
+  +getWeight() : float
+}
+
+class Box {
+  -children : List<Package>
+  +ship()
+  +getWeight() : float
+  +add(p : Package)
+  +remove(p : Package)
+  +getChild(i : int) : Package
+}
+
+Client --> Package
+
+Package <|-- Item
+Package <|-- Box
+
+Box "1" *-- "*" Package : contains
+
+note right of Box
+  ship():
+    for each p in children
+      p.ship()
+    ship this box
+
+  getWeight():
+    total = 0
+    for each p in children
+      total += p.getWeight()
+    return total
+end note
+
+@enduml
