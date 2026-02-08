@@ -2,6 +2,8 @@
 #include "Text.H"
 #include "Attr.H"
 
+// Decorator Pattern: ConcreteDecorator added behavior 
+
 dom::Node * ValidatingElement::appendChild(dom::Node * newChild)
 {
 	dom::Node *	realChild	= unwrap(newChild);

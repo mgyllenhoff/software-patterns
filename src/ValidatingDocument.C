@@ -4,6 +4,8 @@
 #include "Text.H"
 #include "Attr.H"
 
+// Decorator Pattern: ConcreteDecorator added behavior
+
 dom::Node * ValidatingDocument::appendChild(dom::Node * newChild)
 {
 	dom::Node *	realChild	= unwrap(newChild);
@@ -23,10 +25,9 @@ dom::Node * ValidatingDocument::appendChild(dom::Node * newChild)
 
 dom::Element * ValidatingDocument::createElement(const std::string & tagName)
 {
-	dom::Element *	rawElement	= documentDelegate->createElement(tagName);
+	dom::Element *	rawElement	= documentDelegate->createElement(tagName); // ConcreteComponent's FactoryMethod
 
-	// Wrap in ValidatingElement so all operations on this element are validated
-	return new ValidatingElement(rawElement, validator);
+	return new ValidatingElement(rawElement, validator); // Wrap in ConcreteDecorator
 }
 
 dom::Text * ValidatingDocument::createTextNode(const std::string & data)

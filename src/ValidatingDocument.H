@@ -4,9 +4,7 @@
 #include "ValidatingNode.H"
 #include "Document.H"
 
-// Decorator: ConcreteDecorator
-// Wraps a dom::Document and validates appendChild for root elements.
-// Factory methods automatically wrap created Elements in ValidatingElement.
+// Decorator Pattern: ConcreteDecorator
 class ValidatingDocument : public virtual dom::Document, public ValidatingNode
 {
 private:

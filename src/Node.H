@@ -8,6 +8,8 @@ namespace dom
 {
 	class Document;
 
+	// Decorator: Component
+	// Interface that both ConcreteComponents and Decorators implement
 	class Node
 	{
 	public:

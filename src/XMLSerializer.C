@@ -4,7 +4,9 @@
 #include "Document.H"
 #include "Element.H"
 
-// Helper method: delegates node processing to the given strategy
+// Strategy Pattern 1 (Node Processing):
+//  Context dispatches to the Strategy (NodeProcessor) based on node type
+//  The Context does not know which ConcreteStrategy it is using
 void XMLSerializer::serialize(dom::Node* node, NodeProcessor& processor)
 {
     if (dynamic_cast<dom::Document*>(node) != 0)
@@ -13,16 +15,16 @@ void XMLSerializer::serialize(dom::Node* node, NodeProcessor& processor)
         processor.processElement(dynamic_cast<dom::Element*>(node));
 }
 
-// Creates and uses PrettyNodeProcessor strategy
+// Client selects ConcreteStrategy: PrettyNodeProcessor
 void XMLSerializer::serializePretty(dom::Node* node)
 {
-    PrettyNodeProcessor processor(output);
-    serialize(node, processor);
+    PrettyNodeProcessor processor(output); // ConcreteStrategy
+    serialize(node, processor); // Context uses Strategy
 }
 
-// Creates and uses MinimalNodeProcessor strategy
+// Client selects ConcreteStrategy: MinimalNodeProcessor
 void XMLSerializer::serializeMinimal(dom::Node* node)
 {
-    MinimalNodeProcessor processor(output);
-    serialize(node, processor);
+    MinimalNodeProcessor processor(output); // ConcreteStrategy
+    serialize(node, processor); // Context uses Strategy
 }

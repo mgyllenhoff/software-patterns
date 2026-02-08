@@ -4,7 +4,7 @@
 #include "NodeProcessor.H"
 #include <ostream>
 
-// ConcreteStrategy
+// Strategy Pattern 1 (Node Processing): ConcreteStrategy
 class MinimalNodeProcessor : public NodeProcessor
 {
 private:

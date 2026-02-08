@@ -12,7 +12,8 @@ namespace dom
 	class NodeList;
 	class Document;
 
-	// Product
+	// Factory Method: Product
+	// Decorator Pattern: Component
 	class Element : public virtual Node
 	{
 	public:
@@ -33,7 +34,8 @@ namespace dom
 	};
 };
 
-// ConcreteProduct
+// Factory Method: ConcreteProduct
+// Decorator Pattern: ConcreteComponent
 class Element_Impl : public virtual dom::Element, Node_Impl
 {
 private:

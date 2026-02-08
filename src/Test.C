@@ -398,51 +398,52 @@ void testValidatorDecorator(int argc, char** argv)
 	//
 
 	// Schema setup is identical to testValidator
-	XMLValidator xmlValidator;
+	XMLValidator	xmlValidator;
 	ValidChildren *	schemaElement	= xmlValidator.addSchemaElement("");
 	schemaElement->addValidChild("document", false);
-	schemaElement = xmlValidator.addSchemaElement("document");
+	schemaElement	= xmlValidator.addSchemaElement("document");
 	schemaElement->addValidChild("element", false);
-	schemaElement = xmlValidator.addSchemaElement("element");
+	schemaElement	= xmlValidator.addSchemaElement("element");
 	schemaElement->addValidChild("element", false);
 	schemaElement->addValidChild("attribute", true);
 	schemaElement->addValidChild("attribute2", true);
 	schemaElement->setCanHaveText(true);
 
 	// Decorator: wrap Document_Impl in ValidatingDocument
-	// ValidatingDocument is the ConcreteDecorator and Document_Impl is the ConcreteComponent
-	dom::Document *	document = new ValidatingDocument(new Document_Impl, &xmlValidator);
+	// ValidatingDocument is the ConcreteDecorator; Document_Impl is the ConcreteComponent
+	dom::Document *	document	= new ValidatingDocument(new Document_Impl, &xmlValidator);
 
+	// The client code is now clean -- no if/else validation checks.
 	// The Decorator transparently validates each operation and throws
 	// DOMException(HIERARCHY_REQUEST_ERR) on schema violations.
 	try
 	{
-		dom::Element * root = document->createElement("document");
+		dom::Element *	root	= document->createElement("document");
 		document->appendChild(root);
 
-		dom::Element * child = document->createElement("element");
-		dom::Attr *	attr = document->createAttribute("attribute");
+		dom::Element *	child	= document->createElement("element");
+		dom::Attr *	attr	= document->createAttribute("attribute");
 		attr->setValue("attribute value");
 		child->setAttributeNode(attr);
 		root->appendChild(child);
 
-		child = document->createElement("element");
+		child			= document->createElement("element");
 		root->appendChild(child);
 
-		child = document->createElement("element");
+		child			= document->createElement("element");
 		child->setAttribute("attribute", "attribute value");
 		child->setAttribute("attribute2", "attribute2 value");
-		dom::Text *	text = document->createTextNode("Element Value");
+		dom::Text *	text	= document->createTextNode("Element Value");
 		child->appendChild(text);
 		root->appendChild(child);
 
-		child = document->createElement("element");
+		child			= document->createElement("element");
 		root->appendChild(child);
 
 		//
 		// Serialize
 		//
-		XMLSerializer xmlSerializer(argv[2]);
+		XMLSerializer	xmlSerializer(argv[2]);
 		xmlSerializer.serializePretty(document);
 
 		printf("Document built and serialized successfully to '%s'.\n", argv[2]);
@@ -452,12 +453,12 @@ void testValidatorDecorator(int argc, char** argv)
 		printf("Validation error: %s\n", e.getDescription().c_str());
 	}
 
-	// Show that invalid operations are caught by the Decorator
+	// Demonstrate that invalid operations are caught by the Decorator
 	printf("\n=== Testing Decorator validation ===\n");
 
 	try
 	{
-		dom::Element * invalid = document->createElement("invalid_element");
+		dom::Element *	invalid	= document->createElement("invalid_element");
 		document->appendChild(invalid);
 		printf("ERROR: Should have thrown!\n");
 	}
@@ -468,7 +469,7 @@ void testValidatorDecorator(int argc, char** argv)
 
 	try
 	{
-		dom::Element *	child = document->createElement("element");
+		dom::Element *	child	= document->createElement("element");
 		child->setAttribute("invalid_attribute", "value");
 		printf("ERROR: Should have thrown!\n");
 	}
@@ -476,4 +477,6 @@ void testValidatorDecorator(int argc, char** argv)
 	{
 		printf("Caught expected error: %s\n", e.getDescription().c_str());
 	}
+
+	// delete Document and tree.
 }

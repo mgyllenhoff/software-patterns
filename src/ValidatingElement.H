@@ -4,9 +4,7 @@
 #include "ValidatingNode.H"
 #include "Element.H"
 
-// Decorator: ConcreteDecorator
-// Wraps a dom::Element and validates appendChild, insertBefore,
-// setAttribute, and setAttributeNode against the XMLValidator schema.
+// Decorator Pattern: ConcreteDecorator
 class ValidatingElement : public virtual dom::Element, public ValidatingNode
 {
 private:

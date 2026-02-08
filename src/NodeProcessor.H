@@ -11,7 +11,7 @@ namespace dom
     class Text;
 }
 
-// Strategy Interface
+// Strategy Pattern 1 (Node Processing): Strategy Interface
 class NodeProcessor
 {
 public:

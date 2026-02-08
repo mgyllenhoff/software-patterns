@@ -9,13 +9,16 @@
 #include "Node.H"
 #include "NodeProcessor.H"
 
-// Context (for both strategy patterns)
+// Context (for both Strategy patterns)
+// Strategy Pattern 1 (Node Processing): NodeProcessor is the Strategy interface
+// Strategy Pattern 2 (Output Stream): std::ostream is the Strategy interface
 class XMLSerializer
 {
 private:
 	std::fstream* ownedFile;
 
-	// Strategy (std::ostream)
+	// Strategy Pattern 2: Strategy (std::ostream)
+	// ConcreteStrategies: std::cout, std::cerr, std::ofstream, std::ostringstream
 	std::ostream& output;
     
     void serialize(dom::Node* node, NodeProcessor& processor);

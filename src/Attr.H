@@ -10,7 +10,7 @@ namespace dom
 	class Document;
 	class Element;
 
-	// Product
+	// Factory Method: Product
 	class Attr : public virtual Node
 	{
 	public:
@@ -23,7 +23,7 @@ namespace dom
 	};
 };
 
-// ConcreteProduct
+// Factory Method: ConcreteProduct
 class Attr_Impl : public virtual dom::Attr, Node_Impl
 {
 protected:

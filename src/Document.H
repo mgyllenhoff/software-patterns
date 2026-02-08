@@ -12,21 +12,23 @@ namespace dom
 	class Attr;
 	class NodeList;
 
-	// Creator
+	// Factory Method: Creator
+	// Decorator Pattern: Component
 	class Document : public virtual Node
 	{
 	public:
-		// FactoryMethod
+		// Factory Method: FactoryMethod
 		virtual Element *	createElement(const std::string & tagName)	= 0;
-		// FactoryMethod
+		// Factory Method: FactoryMethod
 		virtual Text *		createTextNode(const std::string & data)	= 0;
-		// FactoryMethod
+		// Factory Method: FactoryMethod
 		virtual Attr *		createAttribute(const std::string & name)	= 0;
 		virtual Element *	getDocumentElement()				= 0;
 	};
 };
 
-// ConcreteCreator
+// Factory Method: ConcreteCreator
+// Decorator Pattern: ConcreteComponent
 class Document_Impl : public virtual dom::Document, public virtual Node_Impl
 {
 public:

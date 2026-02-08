@@ -9,7 +9,7 @@ namespace dom
 {
 	class Document;
 
-	// Product
+	// Factory Method: Product
 	class Text : public virtual Node
 	{
 	public:
@@ -30,7 +30,7 @@ namespace dom
 	};
 };
 
-// ConcreteProduct
+// Factory Method: ConcreteProduct
 class Text_Impl : public virtual dom::Text, Node_Impl
 {
 protected:

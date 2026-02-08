@@ -11,19 +11,19 @@ Document_Impl::Document_Impl(void) : Node_Impl("", dom::Node::DOCUMENT_NODE)
 
 Document_Impl::~Document_Impl() {}
 
-// FactoryMethod
+// Factory Method: FactoryMethod
 dom::Element *	Document_Impl::createElement(const std::string & tagName)
 {
 	return new Element_Impl(tagName, this); // ConcreteProduct
 }
 
-// FactoryMethod
+// Factory Method: FactoryMethod
 dom::Text *	Document_Impl::createTextNode(const std::string & data)
 {
 	return new Text_Impl(data, this); // ConcreteProduct
 }
 
-// FactoryMethod
+// Factory Method: FactoryMethod
 dom::Attr *	Document_Impl::createAttribute(const std::string & name)
 {
 	return new Attr_Impl(name, this); // ConcreteProduct
