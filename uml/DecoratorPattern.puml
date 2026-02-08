@@ -1,0 +1,65 @@
+@startuml
+!pragma layout smetana
+
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+
+abstract class "dom::Node" <<Component>> {
+  + appendChild(newChild : Node*) : Node*
+  + insertBefore(newChild : Node*, refChild : Node*) : Node*
+  + removeChild(oldChild : Node*) : Node*
+  + replaceChild(newChild : Node*, oldChild : Node*) : Node*
+}
+
+class "Element_Impl\nDocument_Impl" <<ConcreteComponent>> {
+  + appendChild(newChild : Node*) : Node*
+  + insertBefore(newChild : Node*, refChild : Node*) : Node*
+}
+
+class ValidatingNode <<Decorator>> {
+  # component : dom::Node*
+  # validator : XMLValidator*
+  --
+  + appendChild(newChild : Node*) : Node*
+  + {static} unwrap(node : Node*) : Node*
+}
+note right of ValidatingNode::appendChild
+  component->appendChild(
+    unwrap(newChild));
+end note
+
+class ValidatingElement <<ConcreteDecorator>> {
+  - elementDelegate : dom::Element*
+  --
+  + appendChild(newChild : Node*) : Node*
+  + insertBefore(newChild : Node*, refChild : Node*) : Node*
+  + setAttribute(name : string, value : string)
+  + setAttributeNode(newAttr : Attr*) : Attr*
+}
+note bottom of ValidatingElement
+  validator->canAddElement();
+  validator->canAddText();
+  validator->canAddAttribute();
+  elementDelegate->appendChild(
+    unwrap(newChild));
+end note
+
+class ValidatingDocument <<ConcreteDecorator>> {
+  - documentDelegate : dom::Document*
+  --
+  + appendChild(newChild : Node*) : Node*
+  + createElement(tagName : string) : Element*
+}
+note bottom of ValidatingDocument
+  validator->canRootElement();
+  documentDelegate->appendChild(
+    unwrap(newChild));
+end note
+
+"dom::Node" <|-- "Element_Impl\nDocument_Impl"
+"dom::Node" <|-- ValidatingNode
+ValidatingNode o--> "1" "dom::Node" : component
+ValidatingNode <|-- ValidatingElement
+ValidatingNode <|-- ValidatingDocument
+
+@enduml

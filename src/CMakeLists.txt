@@ -29,4 +29,9 @@ target_sources(Patterns PUBLIC
 	XMLTokenizer.H
 	XMLValidator.C
 	XMLValidator.H
+	ValidatingNode.H
+	ValidatingElement.C
+	ValidatingElement.H
+	ValidatingDocument.C
+	ValidatingDocument.H
 	)

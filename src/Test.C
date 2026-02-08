@@ -8,11 +8,14 @@
 #include "XMLTokenizer.H"
 #include "XMLSerializer.H"
 #include "XMLValidator.H"
+#include "ValidatingDocument.H"
+#include "ValidatingElement.H"
 
 void testTokenizer(int argc, char** argv);
 void testSerializer(int argc, char** argv);
 void testValidator(int argc, char** argv);
 void testSerializerStrategies(int argc, char** argv);
+void testValidatorDecorator(int argc, char** argv);
 
 void printUsage(void)
 {
@@ -21,6 +24,7 @@ void printUsage(void)
 	printf("\tTest s [file1] [file2]\n");
 	printf("\tTest v [file]\n");
 	printf("\tTest o [file]\n");
+	printf("\tTest d [file]\n");
 }
 
 int main(int argc, char** argv)
@@ -48,6 +52,10 @@ int main(int argc, char** argv)
 	case 'O':
 	case 'o':
 		testSerializerStrategies(argc, argv);
+		break;
+	case 'D':
+	case 'd':
+		testValidatorDecorator(argc, argv);
 		break;
 	}
 }
@@ -360,4 +368,112 @@ void testSerializerStrategies(int argc, char** argv)
 
 	// Cleanup
 	delete document;
+}
+
+void testValidatorDecorator(int argc, char** argv)
+{
+	if (argc < 3)
+	{
+		printUsage();
+		exit(0);
+	}
+
+	//
+	// Create tree of this document:
+	// <? xml version="1.0" encoding="UTF-8"?>
+	// <document>
+	//   <element attribute="attribute value"/>
+	//   <element/>
+	//   <element attribute="attribute value" attribute2="attribute2 value">
+	//     Element Value
+	//   </element>
+	//   <element>
+	//   </element>
+	// </document>
+	//
+	// Schema for this document:
+	// document contains:  element
+	// element contains:  element
+	// element contains attributes:  attribute, attribute2
+	//
+
+	// Schema setup is identical to testValidator
+	XMLValidator xmlValidator;
+	ValidChildren *	schemaElement	= xmlValidator.addSchemaElement("");
+	schemaElement->addValidChild("document", false);
+	schemaElement = xmlValidator.addSchemaElement("document");
+	schemaElement->addValidChild("element", false);
+	schemaElement = xmlValidator.addSchemaElement("element");
+	schemaElement->addValidChild("element", false);
+	schemaElement->addValidChild("attribute", true);
+	schemaElement->addValidChild("attribute2", true);
+	schemaElement->setCanHaveText(true);
+
+	// Decorator: wrap Document_Impl in ValidatingDocument
+	// ValidatingDocument is the ConcreteDecorator and Document_Impl is the ConcreteComponent
+	dom::Document *	document = new ValidatingDocument(new Document_Impl, &xmlValidator);
+
+	// The Decorator transparently validates each operation and throws
+	// DOMException(HIERARCHY_REQUEST_ERR) on schema violations.
+	try
+	{
+		dom::Element * root = document->createElement("document");
+		document->appendChild(root);
+
+		dom::Element * child = document->createElement("element");
+		dom::Attr *	attr = document->createAttribute("attribute");
+		attr->setValue("attribute value");
+		child->setAttributeNode(attr);
+		root->appendChild(child);
+
+		child = document->createElement("element");
+		root->appendChild(child);
+
+		child = document->createElement("element");
+		child->setAttribute("attribute", "attribute value");
+		child->setAttribute("attribute2", "attribute2 value");
+		dom::Text *	text = document->createTextNode("Element Value");
+		child->appendChild(text);
+		root->appendChild(child);
+
+		child = document->createElement("element");
+		root->appendChild(child);
+
+		//
+		// Serialize
+		//
+		XMLSerializer xmlSerializer(argv[2]);
+		xmlSerializer.serializePretty(document);
+
+		printf("Document built and serialized successfully to '%s'.\n", argv[2]);
+	}
+	catch (dom::DOMException & e)
+	{
+		printf("Validation error: %s\n", e.getDescription().c_str());
+	}
+
+	// Show that invalid operations are caught by the Decorator
+	printf("\n=== Testing Decorator validation ===\n");
+
+	try
+	{
+		dom::Element * invalid = document->createElement("invalid_element");
+		document->appendChild(invalid);
+		printf("ERROR: Should have thrown!\n");
+	}
+	catch (dom::DOMException & e)
+	{
+		printf("Caught expected error: %s\n", e.getDescription().c_str());
+	}
+
+	try
+	{
+		dom::Element *	child = document->createElement("element");
+		child->setAttribute("invalid_attribute", "value");
+		printf("ERROR: Should have thrown!\n");
+	}
+	catch (dom::DOMException & e)
+	{
+		printf("Caught expected error: %s\n", e.getDescription().c_str());
+	}
 }
