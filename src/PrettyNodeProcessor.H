@@ -17,8 +17,10 @@ public:
     PrettyNodeProcessor(std::ostream& out) : file(out), indentationLevel(0) {}
     virtual ~PrettyNodeProcessor() {}
     
-    virtual void processDocument(dom::Document* doc);
-    virtual void processElement(dom::Element* elem);
+    virtual void processDocumentOpen(dom::Document* doc);
+    virtual void processDocumentClose(dom::Document* doc);
+    virtual void processElementOpen(dom::Element* elem);
+    virtual void processElementClose(dom::Element* elem);
     virtual void processAttr(dom::Attr* attr);
     virtual void processText(dom::Text* text);
 };

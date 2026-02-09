@@ -13,9 +13,11 @@ private:
 public:
     MinimalNodeProcessor(std::ostream& out) : file(out) {}
     virtual ~MinimalNodeProcessor() {}
-    
-    virtual void processDocument(dom::Document* doc);
-    virtual void processElement(dom::Element* elem);
+
+    virtual void processDocumentOpen(dom::Document* doc);
+    virtual void processDocumentClose(dom::Document* doc);
+    virtual void processElementOpen(dom::Element* elem);
+    virtual void processElementClose(dom::Element* elem);
     virtual void processAttr(dom::Attr* attr);
     virtual void processText(dom::Text* text);
 };

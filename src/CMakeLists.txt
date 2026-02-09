@@ -34,4 +34,7 @@ target_sources(Patterns PUBLIC
 	ValidatingElement.H
 	ValidatingDocument.C
 	ValidatingDocument.H
+	DOMIterator.H
+	DepthFirstDOMIterator.C
+	DepthFirstDOMIterator.H
 	)

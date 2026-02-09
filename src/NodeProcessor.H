@@ -16,10 +16,16 @@ class NodeProcessor
 {
 public:
     virtual ~NodeProcessor() {}
-    
-    // Methods for processing each node type
-    virtual void processDocument(dom::Document* doc) = 0;
-    virtual void processElement(dom::Element* elem) = 0;
+
+    // Document events
+    virtual void processDocumentOpen(dom::Document* doc) = 0;
+    virtual void processDocumentClose(dom::Document* doc) = 0;
+
+    // Element events
+    virtual void processElementOpen(dom::Element* elem) = 0;
+    virtual void processElementClose(dom::Element* elem) = 0;
+
+    // Leaf node events (no open/close distinction needed)
     virtual void processAttr(dom::Attr* attr) = 0;
     virtual void processText(dom::Text* text) = 0;
 };

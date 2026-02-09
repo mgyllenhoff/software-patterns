@@ -4,6 +4,8 @@
 #include <string>
 #include "NodeList.H"
 
+class DOMIterator;
+
 namespace dom
 {
 	class Document;
@@ -37,6 +39,10 @@ namespace dom
 		virtual Node *			appendChild(Node * newChild)			= 0;
 		virtual bool			hasChildNodes(void)				= 0;
 		virtual const std::string &	getLocalName(void)				= 0;
+
+		// Iterator Pattern: Aggregate
+		// Factory method to create an iterator over this node's subtree
+		virtual DOMIterator *		createIterator(void)				= 0;
 	};
 
 	class DOMException
@@ -98,6 +104,9 @@ public:
 	virtual const std::string &	getLocalName(void);
 
 	virtual void setParent(dom::Node * parent);
+
+	// Iterator Pattern: ConcreteAggregate
+	virtual DOMIterator *		createIterator(void);
 };
 
 #endif // NODE_H

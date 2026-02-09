@@ -49,6 +49,7 @@ public:
 		{ return component->appendChild(unwrap(newChild)); }
 	virtual bool			hasChildNodes(void)				{ return component->hasChildNodes(); }
 	virtual const std::string &	getLocalName(void)				{ return component->getLocalName(); }
+	virtual DOMIterator *		createIterator(void)				{ return component->createIterator(); }
 };
 
 #endif // VALIDATING_NODE_H

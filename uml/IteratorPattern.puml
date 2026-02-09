@@ -1,0 +1,52 @@
+@startuml
+!pragma layout smetana
+
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+
+class XMLSerializer <<Client>> {
+  --
+  - serialize(node : Node*, processor : NodeProcessor&) : void
+}
+
+interface "dom::Node" as Node <<Aggregate>> {
+  + createIterator() : DOMIterator*
+}
+
+class Node_Impl <<ConcreteAggregate>> {
+  + createIterator() : DOMIterator*
+}
+
+interface DOMIterator <<Iterator>> {
+  + first() : void
+  + next() : void
+  + isDone() : bool
+  + currentItem() : Node*
+  + currentEvent() : Event
+}
+
+class DepthFirstDOMIterator <<ConcreteIterator>> {
+  - root : Node*
+  - current : Node*
+  - event : Event
+  - stack : stack<Frame>
+  --
+  + first() : void
+  + next() : void
+  + isDone() : bool
+  + currentItem() : Node*
+  + currentEvent() : Event
+}
+
+note bottom of Node_Impl
+  return new DepthFirstDOMIterator(this)
+end note
+
+XMLSerializer --> Node
+XMLSerializer --> DOMIterator
+Node <|-- Node_Impl
+DOMIterator <|-- DepthFirstDOMIterator
+Node_Impl .> DepthFirstDOMIterator : <<creates>>
+DepthFirstDOMIterator -> Node_Impl 
+
+@enduml

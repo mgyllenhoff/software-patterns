@@ -4,15 +4,20 @@
 #include "Attr.H"
 #include "Text.H"
 
-// Process Document node: extract version info and delegate to root element
-void MinimalNodeProcessor::processDocument(dom::Document* node)
+// Process Document open: emit XML declaration
+void MinimalNodeProcessor::processDocumentOpen(dom::Document* node)
 {
     file << "<? xml version=\"1.0\" encoding=\"UTF-8\"?>";
-    processElement(node->getDocumentElement());
 }
 
-// Process Element node: extract tag name, attributes, and child nodes
-void MinimalNodeProcessor::processElement(dom::Element* node)
+// Process Document close: nothing to emit
+void MinimalNodeProcessor::processDocumentClose(dom::Document* node)
+{
+}
+
+// Process Element open: emit opening tag with attributes
+// If the element has no children, emit self-closing tag
+void MinimalNodeProcessor::processElementOpen(dom::Element* node)
 {
     file << "<" << node->getTagName();
     
@@ -30,17 +35,14 @@ void MinimalNodeProcessor::processElement(dom::Element* node)
     else
     {
         file << ">";
-        
-        for (dom::NodeList::iterator i = node->getChildNodes()->begin();
-             i != node->getChildNodes()->end();
-             i++)
-        {
-            if (dynamic_cast<dom::Element*>(*i) != 0)
-                processElement(dynamic_cast<dom::Element*>(*i));
-            else if (dynamic_cast<dom::Text*>(*i) != 0)
-                processText(dynamic_cast<dom::Text*>(*i));
-        }
-        
+    }
+}
+
+// Process Element close: emit closing tag (only if element had children)
+void MinimalNodeProcessor::processElementClose(dom::Element* node)
+{
+    if (node->getChildNodes()->size() > 0)
+    {
         file << "</" << node->getTagName() << ">";
     }
 }

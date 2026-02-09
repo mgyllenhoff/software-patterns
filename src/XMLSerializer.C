@@ -1,18 +1,41 @@
 #include "XMLSerializer.H"
 #include "PrettyNodeProcessor.H"
 #include "MinimalNodeProcessor.H"
+#include "DOMIterator.H"
 #include "Document.H"
 #include "Element.H"
+#include "Text.H"
 
 // Strategy Pattern 1 (Node Processing):
-//  Context dispatches to the Strategy (NodeProcessor) based on node type
+//  Context uses an Iterator to traverse the DOM tree and dispatches ENTERING/LEAVING events to the Strategy (NodeProcessor)
 //  The Context does not know which ConcreteStrategy it is using
 void XMLSerializer::serialize(dom::Node* node, NodeProcessor& processor)
 {
-    if (dynamic_cast<dom::Document*>(node) != 0)
-        processor.processDocument(dynamic_cast<dom::Document*>(node));
-    else if (dynamic_cast<dom::Element*>(node) != 0)
-        processor.processElement(dynamic_cast<dom::Element*>(node));
+    DOMIterator * it = node->createIterator();
+
+    for (it->first(); !it->isDone(); it->next())
+    {
+        dom::Node * current = it->currentItem();
+
+        if (it->currentEvent() == DOMIterator::ENTERING)
+        {
+            if (dynamic_cast<dom::Document*>(current) != 0)
+                processor.processDocumentOpen(dynamic_cast<dom::Document*>(current));
+            else if (dynamic_cast<dom::Element*>(current) != 0)
+                processor.processElementOpen(dynamic_cast<dom::Element*>(current));
+            else if (dynamic_cast<dom::Text*>(current) != 0)
+                processor.processText(dynamic_cast<dom::Text*>(current));
+        }
+        else // LEAVING
+        {
+            if (dynamic_cast<dom::Document*>(current) != 0)
+                processor.processDocumentClose(dynamic_cast<dom::Document*>(current));
+            else if (dynamic_cast<dom::Element*>(current) != 0)
+                processor.processElementClose(dynamic_cast<dom::Element*>(current));
+        }
+    }
+
+    delete it;
 }
 
 // Client selects ConcreteStrategy: PrettyNodeProcessor
