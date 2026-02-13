@@ -2,8 +2,7 @@
 #define DOCUMENT_H
 
 #include <string>
-
-#include "Node.H"
+#include "CompositeNode.H"
 
 namespace dom
 {
@@ -13,8 +12,9 @@ namespace dom
 	class NodeList;
 
 	// Factory Method: Creator
+	// Composite Pattern: Composite
 	// Decorator Pattern: Component
-	class Document : public virtual Node
+	class Document : public virtual CompositeNode
 	{
 	public:
 		// Factory Method: FactoryMethod
@@ -28,8 +28,9 @@ namespace dom
 };
 
 // Factory Method: ConcreteCreator
+// Composite Pattern: Composite
 // Decorator Pattern: ConcreteComponent
-class Document_Impl : public virtual dom::Document, public virtual Node_Impl
+class Document_Impl : public virtual dom::Document, public virtual CompositeNode_Impl
 {
 public:
 	Document_Impl(void);

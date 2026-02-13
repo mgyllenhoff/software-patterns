@@ -31,6 +31,7 @@ namespace dom
 };
 
 // Factory Method: ConcreteProduct
+// Composite Pattern: Leaf
 class Text_Impl : public virtual dom::Text, Node_Impl
 {
 protected:

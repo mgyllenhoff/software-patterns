@@ -1,4 +1,5 @@
 #include "Text.H"
+#include "CompositeNode.H"
 #include <stdexcept>
 
 Text_Impl::Text_Impl(const std::string value, dom::Document * document) : Node_Impl("", dom::Node::TEXT_NODE)
@@ -96,7 +97,7 @@ dom::Text *		Text_Impl::splitText(int offset)
 		setValue(substringData(0, offset));
 
 		if (getParentNode() != 0)
-			insertBefore(text, getNextSibling());
+			dynamic_cast<dom::CompositeNode *>(getParentNode())->insertBefore(text, getNextSibling());
 
 		return text;
 	}

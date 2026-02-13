@@ -3,9 +3,9 @@
 #include "Document.H"
 
 Element_Impl::Element_Impl(const std::string & tagName, dom::Document * document) : Node_Impl(tagName, dom::Node::ELEMENT_NODE),
-  attributes(document)
+  CompositeNode_Impl(tagName, dom::Node::ELEMENT_NODE), attributes(document)
 {
-	Node_Impl::document	= document;
+	CompositeNode_Impl::document	= document;
 }
 
 Element_Impl::~Element_Impl()

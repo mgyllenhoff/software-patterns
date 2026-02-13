@@ -24,6 +24,7 @@ namespace dom
 };
 
 // Factory Method: ConcreteProduct
+// Composite Pattern: Leaf
 class Attr_Impl : public virtual dom::Attr, Node_Impl
 {
 protected:

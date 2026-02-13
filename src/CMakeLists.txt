@@ -12,6 +12,8 @@ target_sources(Patterns PUBLIC
 	Element.H
 	NamedNodeMap.C
 	NamedNodeMap.H
+	CompositeNode.C
+	CompositeNode.H
 	Node.C
 	Node.H
 	NodeList.H
@@ -30,6 +32,7 @@ target_sources(Patterns PUBLIC
 	XMLValidator.C
 	XMLValidator.H
 	ValidatingNode.H
+	ValidatingCompositeNode.H
 	ValidatingElement.C
 	ValidatingElement.H
 	ValidatingDocument.C

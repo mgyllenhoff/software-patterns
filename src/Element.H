@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "Node.H"
+#include "CompositeNode.H"
 #include "NamedNodeMap.H"
 
 namespace dom
@@ -13,8 +13,9 @@ namespace dom
 	class Document;
 
 	// Factory Method: Product
+	// Composite Pattern: Composite
 	// Decorator Pattern: Component
-	class Element : public virtual Node
+	class Element : public virtual CompositeNode
 	{
 	public:
 		virtual ~Element() {}
@@ -35,8 +36,9 @@ namespace dom
 };
 
 // Factory Method: ConcreteProduct
+// Composite Pattern: Composite
 // Decorator Pattern: ConcreteComponent
-class Element_Impl : public virtual dom::Element, Node_Impl
+class Element_Impl : public virtual dom::Element, CompositeNode_Impl
 {
 private:
 	NamedNodeMap_Impl	attributes;

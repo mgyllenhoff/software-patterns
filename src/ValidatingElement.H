@@ -1,17 +1,18 @@
 #ifndef VALIDATING_ELEMENT_H
 #define VALIDATING_ELEMENT_H
 
-#include "ValidatingNode.H"
+#include "ValidatingCompositeNode.H"
 #include "Element.H"
 
 // Decorator Pattern: ConcreteDecorator
-class ValidatingElement : public virtual dom::Element, public ValidatingNode
+class ValidatingElement : public virtual dom::Element, public ValidatingCompositeNode
 {
 private:
 	dom::Element *	elementDelegate;
 public:
 	ValidatingElement(dom::Element * component, XMLValidator * validator)
-		: ValidatingNode(component, validator), elementDelegate(component) {}
+		: ValidatingCompositeNode(component, validator),
+		  elementDelegate(component) {}
 
 	virtual ~ValidatingElement() {}
 

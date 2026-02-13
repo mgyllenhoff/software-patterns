@@ -9,9 +9,10 @@ class DOMIterator;
 namespace dom
 {
 	class Document;
+	class CompositeNode;
 
-	// Decorator: Component
-	// Interface that both ConcreteComponents and Decorators implement
+	// Composite Pattern: Component
+	// Decorator Pattern: Component
 	class Node
 	{
 	public:
@@ -27,17 +28,9 @@ namespace dom
 		virtual void			setNodeValue(const std::string & nodeValue)	= 0;
 		virtual short			getNodeType(void)				= 0;
 		virtual Node *			getParentNode(void)				= 0;
-		virtual NodeList *		getChildNodes(void)				= 0;
-		virtual Node *			getFirstChild(void)				= 0;
-		virtual Node *			getLastChild(void)				= 0;
 		virtual Node *			getPreviousSibling(void)			= 0;
 		virtual Node *			getNextSibling(void)				= 0;
 		virtual Document *		getOwnerDocument(void)				= 0;
-		virtual Node *			insertBefore(Node * newChild, Node * refChild)	= 0;
-		virtual Node *			replaceChild(Node * newChild, Node * oldChild)	= 0;
-		virtual Node *			removeChild(Node * oldChild)			= 0;
-		virtual Node *			appendChild(Node * newChild)			= 0;
-		virtual bool			hasChildNodes(void)				= 0;
 		virtual const std::string &	getLocalName(void)				= 0;
 
 		// Iterator Pattern: Aggregate
@@ -68,14 +61,14 @@ namespace dom
 	};
 };
 
+// Composite Pattern: Component implementation (Leaf base)
 class Node_Impl : public virtual dom::Node
 {
 private:
-	std::string	name;
-	std::string	value;
-	short		nodeType;
-	dom::Node *	parent;
-	dom::NodeList	nodes;
+	std::string		name;
+	std::string		value;
+	short			nodeType;
+	dom::CompositeNode *	parent;
 
 	dom::Node *			getSibling(int direction);
 protected:
@@ -90,20 +83,12 @@ public:
 	virtual void			setNodeValue(const std::string & nodeValue);
 	virtual short			getNodeType(void);
 	virtual dom::Node *		getParentNode(void);
-	virtual dom::NodeList *		getChildNodes(void);
-	virtual dom::Node *		getFirstChild(void);
-	virtual dom::Node *		getLastChild(void);
 	virtual dom::Node *		getPreviousSibling(void);
 	virtual dom::Node *		getNextSibling(void);
 	virtual dom::Document *		getOwnerDocument(void);
-	virtual dom::Node *		insertBefore(dom::Node * newChild, dom::Node * refChild);
-	virtual dom::Node *		replaceChild(dom::Node * newChild, dom::Node * oldChild);
-	virtual dom::Node *		removeChild(dom::Node * oldChild);
-	virtual dom::Node *		appendChild(dom::Node * newChild);
-	virtual bool			hasChildNodes(void);
 	virtual const std::string &	getLocalName(void);
 
-	virtual void setParent(dom::Node * parent);
+	virtual void setParent(dom::CompositeNode * parent);
 
 	// Iterator Pattern: ConcreteAggregate
 	virtual DOMIterator *		createIterator(void);

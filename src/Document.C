@@ -4,9 +4,9 @@
 #include "Attr.H"
 #include "NodeList.H"
 
-Document_Impl::Document_Impl(void) : Node_Impl("", dom::Node::DOCUMENT_NODE)
+Document_Impl::Document_Impl(void) : Node_Impl("", dom::Node::DOCUMENT_NODE), CompositeNode_Impl("", dom::Node::DOCUMENT_NODE)
 {
-	Node_Impl::document	= this;
+	CompositeNode_Impl::document	= this;
 }
 
 Document_Impl::~Document_Impl() {}

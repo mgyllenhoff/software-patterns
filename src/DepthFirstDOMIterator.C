@@ -1,4 +1,5 @@
 #include "DepthFirstDOMIterator.H"
+#include "CompositeNode.H"
 
 DepthFirstDOMIterator::DepthFirstDOMIterator(dom::Node * root)
 	: root(root), current(0), event(ENTERING), done(true)
@@ -12,24 +13,28 @@ DepthFirstDOMIterator::~DepthFirstDOMIterator()
 // Push the current node's children onto the stack and descend to the first child
 void DepthFirstDOMIterator::descend()
 {
-	dom::NodeList * children = current->getChildNodes();
+	dom::CompositeNode * composite = dynamic_cast<dom::CompositeNode *>(current);
 
-	if (children != 0 && children->size() > 0)
+	if (composite != 0)
 	{
-		Frame frame;
-		frame.parent	= current;
-		frame.childIter	= children->begin();
-		frame.childEnd	= children->end();
-		stack.push(frame);
+		dom::NodeList * children = composite->getChildNodes();
 
-		current	= *(stack.top().childIter);
-		event	= ENTERING;
+		if (children != 0 && children->size() > 0)
+		{
+			Frame frame;
+			frame.parent	= current;
+			frame.childIter	= children->begin();
+			frame.childEnd	= children->end();
+			stack.push(frame);
+
+			current	= *(stack.top().childIter);
+			event	= ENTERING;
+			return;
+		}
 	}
-	else
-	{
-		// Leaf node or empty composite: immediately transition to LEAVING
-		event = LEAVING;
-	}
+
+	// Leaf node or empty composite, immediately transition to LEAVING
+	event = LEAVING;
 }
 
 void DepthFirstDOMIterator::first()

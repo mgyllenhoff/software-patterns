@@ -33,21 +33,9 @@ public:
 	virtual void			setNodeValue(const std::string & nodeValue)	{ component->setNodeValue(nodeValue); }
 	virtual short			getNodeType(void)				{ return component->getNodeType(); }
 	virtual dom::Node *		getParentNode(void)				{ return component->getParentNode(); }
-	virtual dom::NodeList *		getChildNodes(void)				{ return component->getChildNodes(); }
-	virtual dom::Node *		getFirstChild(void)				{ return component->getFirstChild(); }
-	virtual dom::Node *		getLastChild(void)				{ return component->getLastChild(); }
 	virtual dom::Node *		getPreviousSibling(void)			{ return component->getPreviousSibling(); }
 	virtual dom::Node *		getNextSibling(void)				{ return component->getNextSibling(); }
 	virtual dom::Document *		getOwnerDocument(void)				{ return component->getOwnerDocument(); }
-	virtual dom::Node *		insertBefore(dom::Node * newChild, dom::Node * refChild)
-		{ return component->insertBefore(unwrap(newChild), unwrap(refChild)); }
-	virtual dom::Node *		replaceChild(dom::Node * newChild, dom::Node * oldChild)
-		{ return component->replaceChild(unwrap(newChild), unwrap(oldChild)); }
-	virtual dom::Node *		removeChild(dom::Node * oldChild)
-		{ return component->removeChild(unwrap(oldChild)); }
-	virtual dom::Node *		appendChild(dom::Node * newChild)
-		{ return component->appendChild(unwrap(newChild)); }
-	virtual bool			hasChildNodes(void)				{ return component->hasChildNodes(); }
 	virtual const std::string &	getLocalName(void)				{ return component->getLocalName(); }
 	virtual DOMIterator *		createIterator(void)				{ return component->createIterator(); }
 };
