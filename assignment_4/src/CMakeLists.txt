@@ -20,6 +20,10 @@ target_sources(Patterns PUBLIC
 	Text.H
 	XMLSerializer.C
 	XMLSerializer.H
+	PrettyXMLSerializer.C
+	PrettyXMLSerializer.H
+	MinimalXMLSerializer.C
+	MinimalXMLSerializer.H
 	XMLTokenizer.C
 	XMLTokenizer.H
 	XMLValidator.C

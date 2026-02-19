@@ -1,0 +1,64 @@
+@startuml
+!pragma layout smetana
+
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+
+abstract class XMLSerializer <<AbstractClass>> {
+  # file : fstream
+  --
+  + serialize(node : Node*) : void
+  # {abstract} writeDeclarationSuffix() : void
+  # {abstract} writeBeforeOpenTag() : void
+  # {abstract} writeAfterAttributes(attrCount : int) : void
+  # {abstract} writeEmptyElementClose() : void
+  # {abstract} writeAfterOpenBracket() : void
+  # {abstract} beforeChildrenEnd() : void
+  # {abstract} writeAfterCloseTag() : void
+  # {abstract} writeBeforeText() : void
+  # {abstract} writeAfterText() : void
+}
+note right of XMLSerializer::serialize
+  writeDeclarationSuffix()
+  writeBeforeOpenTag()
+  writeAfterAttributes()
+  writeEmptyElementClose()
+  writeAfterOpenBracket()
+  beforeChildrenEnd()
+  writeAfterCloseTag()
+  writeBeforeText()
+  writeAfterText()
+end note
+
+class PrettyXMLSerializer <<ConcreteClass>> {
+  - indentationLevel : int
+  - writeIndentation() : void
+  --
+  # writeDeclarationSuffix() : void
+  # writeBeforeOpenTag() : void
+  # writeAfterAttributes(attrCount : int) : void
+  # writeEmptyElementClose() : void
+  # writeAfterOpenBracket() : void
+  # beforeChildrenEnd() : void
+  # writeAfterCloseTag() : void
+  # writeBeforeText() : void
+  # writeAfterText() : void
+}
+
+class MinimalXMLSerializer <<ConcreteClass>> {
+  --
+  # writeDeclarationSuffix() : void
+  # writeBeforeOpenTag() : void
+  # writeAfterAttributes(attrCount : int) : void
+  # writeEmptyElementClose() : void
+  # writeAfterOpenBracket() : void
+  # beforeChildrenEnd() : void
+  # writeAfterCloseTag() : void
+  # writeBeforeText() : void
+  # writeAfterText() : void
+}
+
+PrettyXMLSerializer  --|> XMLSerializer
+MinimalXMLSerializer --|> XMLSerializer
+
+@enduml
