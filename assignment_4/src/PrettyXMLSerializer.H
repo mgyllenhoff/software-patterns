@@ -2,6 +2,7 @@
 
 #include "XMLSerializer.H"
 
+// Template Method: ConcreteClass
 class PrettyXMLSerializer : public XMLSerializer
 {
 private:

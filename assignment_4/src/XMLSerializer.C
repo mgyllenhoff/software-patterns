@@ -5,6 +5,7 @@
 #include "Attr.H"
 #include "Text.H"
 
+// Template method: AbstractClass
 void XMLSerializer::serialize(dom::Node * node)
 {
 	if (dynamic_cast<dom::Document *>(node) != 0)

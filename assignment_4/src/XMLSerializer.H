@@ -6,12 +6,13 @@
 
 #include "Node.H"
 
+// Template Method: AbstractClass
 class XMLSerializer
 {
 protected:
 	std::fstream		file;
 
-	// Hook methods — variant steps (pure virtual)
+	// Primitive methods
 	virtual void		writeDeclarationSuffix() = 0;		// "\n" vs nothing after declaration
 	virtual void		writeBeforeOpenTag() = 0;			// indentation vs nothing
 	virtual void		writeAfterAttributes(int attrCount) = 0;	// trailing " " vs nothing
@@ -27,6 +28,6 @@ public:
 		: file(filename.c_str(), std::ios_base::out) {}
 	virtual ~XMLSerializer() {}
 
-	// Template method — the invariant skeleton (non-virtual)
+	// Invariant skeleton
 	void			serialize(dom::Node * node);
 };

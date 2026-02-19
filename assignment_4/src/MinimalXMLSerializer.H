@@ -2,6 +2,7 @@
 
 #include "XMLSerializer.H"
 
+// Template Method: ConcreteClass
 class MinimalXMLSerializer : public XMLSerializer
 {
 protected:

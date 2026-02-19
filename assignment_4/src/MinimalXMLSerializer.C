@@ -1,9 +1,5 @@
 #include "MinimalXMLSerializer.H"
 
-// All hooks that control formatting are no-ops.
-// writeEmptyElementClose and writeAfterOpenBracket still write the
-// required XML punctuation (">" and "/>") — they just omit newlines.
-
 void MinimalXMLSerializer::writeDeclarationSuffix()		{}
 void MinimalXMLSerializer::writeBeforeOpenTag()			{}
 void MinimalXMLSerializer::writeAfterAttributes(int)	{}
