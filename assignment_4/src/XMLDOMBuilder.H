@@ -7,6 +7,7 @@
 #include "Element.H"
 
 // Builder: ConcreteBuilder
+// Abstract Factory: Client
 class XMLDOMBuilder : public DOMBuilder
 {
 private:

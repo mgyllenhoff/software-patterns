@@ -298,6 +298,7 @@ void testValidator(int argc, char** argv)
 	// delete Document and tree.
 }
 
+// Builder: Client
 void testParser(int argc, char** argv)
 {
 	if (argc < 4)

@@ -8,6 +8,7 @@ namespace dom
 {
 	class Document;
 
+	// Abstract Factory: Product
 	class Node
 	{
 	public:
@@ -60,6 +61,7 @@ namespace dom
 	};
 };
 
+// Abstract Factory: ConcreteProduct
 class Node_Impl : public virtual dom::Node
 {
 private:
