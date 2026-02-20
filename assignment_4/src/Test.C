@@ -7,10 +7,14 @@
 #include "PrettyXMLSerializer.H"
 #include "MinimalXMLSerializer.H"
 #include "XMLValidator.H"
+#include "StandardDOMNodeFactory.H"
+#include "XMLDOMBuilder.H"
+#include "XMLParser.H"
 
 void testTokenizer(int argc, char** argv);
 void testSerializer(int argc, char** argv);
 void testValidator(int argc, char** argv);
+void testParser(int argc, char** argv);
 
 void printUsage(void)
 {
@@ -18,6 +22,7 @@ void printUsage(void)
 	printf("\tTest t [file] ...\n");
 	printf("\tTest s [file1] [file2]\n");
 	printf("\tTest v [file]\n");
+	printf("\tTest p [file1] [file2]\n");
 }
 
 int main(int argc, char** argv)
@@ -41,6 +46,10 @@ int main(int argc, char** argv)
 	case 'V':
 	case 'v':
 		testValidator(argc, argv);
+		break;
+	case 'P':
+	case 'p':
+		testParser(argc, argv);
 		break;
 	}
 }
@@ -287,4 +296,29 @@ void testValidator(int argc, char** argv)
 	xmlSerializer.serialize(document);
 
 	// delete Document and tree.
+}
+
+void testParser(int argc, char** argv)
+{
+	if (argc < 4)
+	{
+		printUsage();
+		exit(0);
+	}
+
+	//
+	// Director (XMLParser) drives the ConcreteBuilder (XMLDOMBuilder) which
+	// uses the ConcreteFactory (StandardDOMNodeFactory) to create DOM nodes.
+	// argv[2] = input XML file, argv[3] = output pretty-printed XML file.
+	//
+	StandardDOMNodeFactory	factory;
+	XMLDOMBuilder		builder(&factory);
+	XMLParser		parser(argv[2], &builder);
+
+	parser.parse();
+
+	dom::Document *		document	= builder.getDocument();
+
+	PrettyXMLSerializer	serializer(argv[3]);
+	serializer.serialize(document);
 }

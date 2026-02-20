@@ -28,4 +28,12 @@ target_sources(Patterns PUBLIC
 	XMLTokenizer.H
 	XMLValidator.C
 	XMLValidator.H
+	DOMNodeFactory.H
+	StandardDOMNodeFactory.C
+	StandardDOMNodeFactory.H
+	DOMBuilder.H
+	XMLDOMBuilder.C
+	XMLDOMBuilder.H
+	XMLParser.C
+	XMLParser.H
 	)
