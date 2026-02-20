@@ -1,0 +1,89 @@
+@startuml
+!pragma layout smetana
+
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+
+' ── Client ───────────────────────────────────────────────────────────────────
+class XMLDOMBuilder <<Client>> {
+  - document : dom::Document*
+  - elementStack : stack<dom::Element*>
+  --
+  + beginElement(name : string) : void
+  + addAttribute(name : string, value : string) : void
+  + addText(data : string) : void
+  + endElement() : void
+  + getDocument() : dom::Document*
+}
+
+' ── Abstract Factory ─────────────────────────────────────────────────────────
+abstract class DOMNodeFactory <<AbstractFactory>> {
+  --
+  + {abstract} createDocument() : dom::Document*
+  + {abstract} createElement(doc : Document*, tag : string) : dom::Element*
+  + {abstract} createAttribute(doc : Document*, name : string) : dom::Attr*
+  + {abstract} createText(doc : Document*, data : string) : dom::Text*
+}
+
+' ── Concrete Factory ─────────────────────────────────────────────────────────
+class StandardDOMNodeFactory <<ConcreteFactory>> {
+  --
+  + createDocument() : dom::Document*
+  + createElement(doc : Document*, tag : string) : dom::Element*
+  + createAttribute(doc : Document*, name : string) : dom::Attr*
+  + createText(doc : Document*, data : string) : dom::Text*
+}
+
+' ── Abstract Products ────────────────────────────────────────────────────────
+abstract class "dom::Element" <<AbstractProduct>> {
+  + {abstract} getTagName() : string
+  + {abstract} setAttribute(name : string, value : string) : void
+  + {abstract} setAttributeNode(attr : Attr*) : Attr*
+}
+
+abstract class "dom::Attr" <<AbstractProduct>> {
+  + {abstract} getName() : string
+  + {abstract} getValue() : string
+  + {abstract} setValue(value : string) : void
+}
+
+abstract class "dom::Text" <<AbstractProduct>> {
+  + {abstract} getData() : string
+  + {abstract} setData(value : string) : void
+}
+
+' ── Concrete Products ────────────────────────────────────────────────────────
+class Element_Impl <<ConcreteProduct>> {
+  + getTagName() : string
+  + setAttribute(name : string, value : string) : void
+  + setAttributeNode(attr : Attr*) : Attr*
+}
+
+class Attr_Impl <<ConcreteProduct>> {
+  + getName() : string
+  + getValue() : string
+  + setValue(value : string) : void
+}
+
+class Text_Impl <<ConcreteProduct>> {
+  + getData() : string
+  + setData(value : string) : void
+}
+
+' ── Relationships ────────────────────────────────────────────────────────────
+XMLDOMBuilder        o-->  DOMNodeFactory
+XMLDOMBuilder        ..>   "dom::Element"
+XMLDOMBuilder        ..>   "dom::Attr"
+XMLDOMBuilder        ..>   "dom::Text"
+
+StandardDOMNodeFactory --> DOMNodeFactory
+
+Element_Impl         -->  "dom::Element"
+Attr_Impl            -->  "dom::Attr"
+Text_Impl            -->  "dom::Text"
+
+StandardDOMNodeFactory --> Element_Impl : <<instantiates>>
+StandardDOMNodeFactory --> Attr_Impl    : <<instantiates>>
+StandardDOMNodeFactory --> Text_Impl    : <<instantiates>>
+
+@enduml

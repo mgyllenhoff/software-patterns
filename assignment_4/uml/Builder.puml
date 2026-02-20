@@ -1,0 +1,58 @@
+@startuml
+!pragma layout smetana
+
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+
+' ── Client ───────────────────────────────────────────────────────────────────
+class "testParser()" <<Client>> {
+}
+
+' ── Director ─────────────────────────────────────────────────────────────────
+class XMLParser <<Director>> {
+  - tokenizer : XMLTokenizer
+  --
+  + parse() : void
+}
+note left of XMLParser::parse
+  for each token:
+    builder->BuildPart()
+end note
+
+' ── Builder (abstract) ───────────────────────────────────────────────────────
+abstract class DOMBuilder <<Builder>> {
+  --
+  + {abstract} beginElement(name : string) : void
+  + {abstract} addAttribute(name : string, value : string) : void
+  + {abstract} addText(data : string) : void
+  + {abstract} endElement() : void
+  + {abstract} getDocument() : dom::Document*
+}
+
+' ── Concrete Builder ─────────────────────────────────────────────────────────
+class XMLDOMBuilder <<ConcreteBuilder>> {
+  - document : dom::Document*
+  - elementStack : stack<dom::Element*>
+  - factory : DOMNodeFactory*
+  --
+  + beginElement(name : string) : void
+  + addAttribute(name : string, value : string) : void
+  + addText(data : string) : void
+  + endElement() : void
+  + getDocument() : dom::Document*
+}
+
+' ── Product ──────────────────────────────────────────────────────────────────
+class "dom::Document" <<Product>> {
+}
+
+' ── Relationships ────────────────────────────────────────────────────────────
+"testParser()"  -->  XMLParser
+"testParser()"  -->  XMLDOMBuilder
+
+XMLParser       o-->  DOMBuilder
+
+XMLDOMBuilder   -->  DOMBuilder
+XMLDOMBuilder   -->   "dom::Document"
+
+@enduml
