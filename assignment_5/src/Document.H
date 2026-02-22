@@ -12,6 +12,7 @@ namespace dom
 	class Attr;
 	class NodeList;
 
+	// Builder: Product
 	class Document : public virtual Node
 	{
 	public:

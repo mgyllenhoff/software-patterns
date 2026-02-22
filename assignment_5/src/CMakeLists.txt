@@ -20,8 +20,20 @@ target_sources(Patterns PUBLIC
 	Text.H
 	XMLSerializer.C
 	XMLSerializer.H
+	PrettyXMLSerializer.C
+	PrettyXMLSerializer.H
+	MinimalXMLSerializer.C
+	MinimalXMLSerializer.H
 	XMLTokenizer.C
 	XMLTokenizer.H
 	XMLValidator.C
 	XMLValidator.H
+	DOMNodeFactory.H
+	StandardDOMNodeFactory.C
+	StandardDOMNodeFactory.H
+	DOMBuilder.H
+	XMLDOMBuilder.C
+	XMLDOMBuilder.H
+	XMLParser.C
+	XMLParser.H
 	)
