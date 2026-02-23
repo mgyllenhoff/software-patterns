@@ -312,8 +312,7 @@ void testParser(int argc, char** argv)
 	// uses the ConcreteFactory (StandardDOMNodeFactory) to create DOM nodes.
 	// argv[2] = input XML file, argv[3] = output pretty-printed XML file.
 	//
-	StandardDOMNodeFactory	factory;
-	XMLDOMBuilder		builder(&factory);
+	XMLDOMBuilder		builder(StandardDOMNodeFactory::Instance());
 	XMLParser		parser(argv[2], &builder);
 
 	parser.parse();

@@ -1,0 +1,23 @@
+@startuml
+!pragma layout smetana
+
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+
+' ── Singleton ─────────────────────────────────────────────────────────────────
+class StandardDOMNodeFactory <<Singleton>> {
+  - _instance : static StandardDOMNodeFactory*
+  --
+  + Instance() : static StandardDOMNodeFactory*
+  + createDocument() : dom::Document*
+  + createElement(doc : Document*, tag : string) : dom::Element*
+  + createAttribute(doc : Document*, name : string) : dom::Attr*
+  + createText(doc : Document*, data : string) : dom::Text*
+}
+note right of StandardDOMNodeFactory::Instance
+  if (_instance == 0)
+    _instance = new StandardDOMNodeFactory
+  return _instance
+end note
+
+@enduml
