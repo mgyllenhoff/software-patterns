@@ -3,6 +3,7 @@
 #include "XMLSerializer.H"
 
 // Template Method: ConcreteClass
+// Proxy: Client
 class PrettyXMLSerializer : public XMLSerializer
 {
 private:

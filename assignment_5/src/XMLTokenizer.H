@@ -8,10 +8,12 @@
 class XMLTokenizer
 {
 private:
-	std::fstream		file;
+	std::fstream	file;
 	std::string		line;
-	int			line_number;
-	int			index;
+	int				line_number;
+	int				index;
+	std::streampos	lineStart;	// file position of start of current line
+	std::streampos	nextLineStart;	// file position of start of next line
 	bool			inside_tag;
 	bool			pending_attribute_value;
 	bool			tag_found;
@@ -76,9 +78,11 @@ public:
 	};
 
 	XMLTokenizer(const std::string & filename);
+	XMLTokenizer(const std::string & filename, std::streampos startPos);
 	~XMLTokenizer() {}
 
 	virtual int		getLineNumber(void)	{ return line_number; }
 	virtual int		getLineCharacter(void)	{ return index; }
 	virtual XMLToken *	getNextToken(void);
+	virtual std::streampos	getCurrentPosition(void) const;
 };

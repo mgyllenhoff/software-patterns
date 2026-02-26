@@ -52,6 +52,8 @@ XMLTokenizer::XMLTokenizer(const std::string & filename) :
   file(filename.c_str(), std::ios_base::in),
   line_number(0),
   index(0),
+  lineStart(0),
+  nextLineStart(0),
   inside_tag(false),
   pending_attribute_value(false),
   tag_found(false),
@@ -70,11 +72,48 @@ XMLTokenizer::XMLTokenizer(const std::string & filename) :
 {
 }
 
+// Opens the file and seeks to startPos so that getNextToken() resumes tokenization from that byte offset
+XMLTokenizer::XMLTokenizer(const std::string & filename, std::streampos startPos) :
+  file(filename.c_str(), std::ios_base::in),
+  line_number(0),
+  index(0),
+  lineStart(startPos),
+  nextLineStart(startPos),
+  inside_tag(false),
+  pending_attribute_value(false),
+  tag_found(false),
+  prolog_start(PROLOG_START),
+  prolog_identifier(PROLOG_IDENTIFIER),
+  attribute_value(ATTRIBUTE_VALUE),
+  prolog_end(PROLOG_END),
+  tag_start(TAG_START),
+  element(ELEMENT),
+  attribute(ATTRIBUTE),
+  null_tag_end(NULL_TAG_END),
+  tag_close_start(TAG_CLOSE_START),
+  value(VALUE),
+  tag_end(TAG_END),
+  space_to_eol(SPACE_TO_EOL)
+{
+  file.seekg(startPos);
+}
+
+// Returns the byte offset of the current parse position within the file
+// When the line buffer has been fully consumed, returns nextLineStart (the
+// first byte of the following line) so childrenStart is never on a '\n'
+std::streampos XMLTokenizer::getCurrentPosition(void) const
+{
+  if (line.empty()) return nextLineStart;
+  return lineStart + static_cast<std::streamoff>(index);
+}
+
 XMLTokenizer::XMLToken *	XMLTokenizer::getNextToken(void)
 {
 	if (line.size() == 0)
 	{
+		lineStart = file.tellg();
 		std::getline(file, line);
+		nextLineStart = file.tellg();
 		index	= 0;
 		line_number++;
 
@@ -189,6 +228,8 @@ XMLTokenizer::XMLToken *	XMLTokenizer::getNextToken(void)
 
 void		XMLTokenizer::update_matchers(const std::ssub_match & matcher, const std::ssub_match & suffix)
 {
+	index	+= matcher.str().size();
+
 	if (matcher.str().size() >= line.size())
 	{
 		line.clear();
@@ -196,5 +237,4 @@ void		XMLTokenizer::update_matchers(const std::ssub_match & matcher, const std::
 	}
 
 	line	= suffix.str();
-	index	+= matcher.str().size();
 }

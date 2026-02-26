@@ -36,4 +36,6 @@ target_sources(Patterns PUBLIC
 	XMLDOMBuilder.H
 	XMLParser.C
 	XMLParser.H
+	VirtualElement.C
+	VirtualElement.H
 	)

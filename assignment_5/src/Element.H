@@ -13,6 +13,7 @@ namespace dom
 	class Document;
 
 	// Abstract Factory: Product
+	// Proxy: Subject
 	class Element : public virtual Node
 	{
 	public:
@@ -34,7 +35,8 @@ namespace dom
 };
 
 // Abstract Factory: ConcreteProduct
-class Element_Impl : public virtual dom::Element, Node_Impl
+// Proxy: RealSubject
+class Element_Impl : public virtual dom::Element, protected Node_Impl
 {
 private:
 	NamedNodeMap_Impl	attributes;

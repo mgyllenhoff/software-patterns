@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <ios>
 
 #include "Document.H"
 
@@ -13,6 +14,8 @@ public:
 	virtual void		addText(const std::string & data) = 0;
 	virtual void		endElement() = 0;
 	virtual dom::Document *	getDocument() = 0;
+	virtual void		openTagComplete(std::streampos pos) {}
+	virtual bool		shouldSkipChildren() { return false; }
 
 	virtual ~DOMBuilder() {}
 };

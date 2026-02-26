@@ -1,18 +1,41 @@
 #include "XMLDOMBuilder.H"
+#include "VirtualElement.H"
 
+// Normal (eager parse)
 XMLDOMBuilder::XMLDOMBuilder(DOMNodeFactory * factory)
-	: factory(factory)
+	: factory(factory), virtualMode(false), filename("")
 {
-	// Create the Document immediately via the Abstract Factory
 	document = factory->createDocument();
+}
+
+// Virtual Proxy
+// beginElement() creates VirtualElement objects
+// Parser is asked to skip children after each opening tag
+XMLDOMBuilder::XMLDOMBuilder(DOMNodeFactory * factory, const std::string & filename)
+	: factory(factory), virtualMode(true), filename(filename)
+{
+	document = factory->createDocument();
+}
+
+// Root-element
+// Used during VirtualElement::materialize() to populate an existing element
+// Pre-pushes the existing element so beginElement() appends children directly to it
+XMLDOMBuilder::XMLDOMBuilder(DOMNodeFactory * factory, dom::Element * root)
+	: factory(factory), virtualMode(false), filename("")
+{
+	document = root->getOwnerDocument();
+	elementStack.push(root);
 }
 
 // Creates an element, appends it to the current parent (or the document if
 // this is the root), then pushes it onto the stack so subsequent calls
 // operate on it as the new current element.
+// With virtual proxy, creates VirtualElement instead of default
 void XMLDOMBuilder::beginElement(const std::string & name)
 {
-	dom::Element * elem = factory->createElement(document, name);
+	dom::Element * elem = virtualMode
+		? new VirtualElement(name, document, filename)
+		: factory->createElement(document, name);
 
 	if (elementStack.empty())
 		document->appendChild(elem);	// root element
@@ -44,8 +67,22 @@ void XMLDOMBuilder::endElement()
 		elementStack.pop();
 }
 
-// Gets resulting document
 dom::Document * XMLDOMBuilder::getDocument()
 {
 	return document;
+}
+
+// With virtual proxy, records the children-start byte offset on the top-of-stack
+// VirtualElement so it knows where to seek when materialize() is called
+void XMLDOMBuilder::openTagComplete(std::streampos pos)
+{
+	if (!virtualMode) return;
+	VirtualElement * ve = dynamic_cast<VirtualElement *>(elementStack.top());
+	if (ve) ve->setChildrenStart(pos);
+}
+
+// Tell the parser to skip children when in virtual mode
+bool XMLDOMBuilder::shouldSkipChildren()
+{
+	return virtualMode;
 }

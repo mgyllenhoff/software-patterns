@@ -10,11 +10,13 @@
 #include "StandardDOMNodeFactory.H"
 #include "XMLDOMBuilder.H"
 #include "XMLParser.H"
+#include "VirtualElement.H"
 
 void testTokenizer(int argc, char** argv);
 void testSerializer(int argc, char** argv);
 void testValidator(int argc, char** argv);
 void testParser(int argc, char** argv);
+void testVirtualProxy(int argc, char** argv);
 
 void printUsage(void)
 {
@@ -23,6 +25,7 @@ void printUsage(void)
 	printf("\tTest s [file1] [file2]\n");
 	printf("\tTest v [file]\n");
 	printf("\tTest p [file1] [file2]\n");
+	printf("\tTest x [file1] [file2]\n");
 }
 
 int main(int argc, char** argv)
@@ -50,6 +53,10 @@ int main(int argc, char** argv)
 	case 'P':
 	case 'p':
 		testParser(argc, argv);
+		break;
+	case 'X':
+	case 'x':
+		testVirtualProxy(argc, argv);
 		break;
 	}
 }
@@ -319,6 +326,33 @@ void testParser(int argc, char** argv)
 
 	dom::Document *		document	= builder.getDocument();
 
+	PrettyXMLSerializer	serializer(argv[3]);
+	serializer.serialize(document);
+}
+
+// Phase 1: parses argv[2] with XMLDOMBuilder in virtual-proxy mode, producing
+//          a shallow tree of VirtualElement nodes (children not yet parsed).
+// Phase 2: serializes to argv[3] with PrettyXMLSerializer; traversing children
+//          triggers VirtualElement::materialize() on demand.
+void testVirtualProxy(int argc, char** argv)
+{
+	if (argc < 4)
+	{
+		printUsage();
+		exit(0);
+	}
+
+	// Virtual-proxy mode: XMLDOMBuilder creates VirtualElement objects and
+	// records each element's children-start offset, then skips children.
+	XMLDOMBuilder		builder(StandardDOMNodeFactory::Instance(), argv[2]);
+	XMLParser		parser(argv[2], &builder);
+
+	parser.parse();
+
+	dom::Document *		document	= builder.getDocument();
+
+	// Serialization traverses the tree, triggering materialize() lazily on
+	// each VirtualElement the first time its children are accessed.
 	PrettyXMLSerializer	serializer(argv[3]);
 	serializer.serialize(document);
 }
