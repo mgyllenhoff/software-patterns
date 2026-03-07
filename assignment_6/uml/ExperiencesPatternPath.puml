@@ -1,0 +1,46 @@
+@startuml ExperiencesPatternPath
+
+skinparam defaultFontSize 13
+skinparam defaultFontName Arial
+skinparam backgroundColor #FEFEFE
+skinparam TitleFontSize 15
+skinparam TitleFontStyle bold
+skinparam ArrowColor #1A6FAE
+skinparam ArrowThickness 2
+
+skinparam rectangle {
+  BackgroundColor #1A6FAE
+  FontColor       #FFFFFF
+  BorderColor     #0D3B6E
+  BorderThickness 2
+  RoundCorner     8
+}
+
+title Experiences Pattern Language\nSelected Path for XML Document Editor
+
+rectangle "**Interaction Style**\nStudy the user; choose direct manipulation" as IS
+rectangle "**Explorable Interface**\nGraphical; reversible commands" as ExI
+rectangle "**Multiple Settings**\nOne setting per open XML document" as MultiS
+rectangle "**Command Control Center**\nPersistent menu bar + toolbar" as CCC
+rectangle "**Garden of Windows**\nOne labeled window per document" as GoW
+rectangle "**Goal Oriented Areas**\nTree panel | Detail panel | Toolbar" as GOA
+rectangle "**Modeless Feedback Area**\nStatus bar: state, validation, format" as MFA
+rectangle "**Toolbar**\n..." as TB
+rectangle "**Menubar**\n..." as MB
+rectangle "**Clickable Symbols**\n..." as CS
+
+
+
+IS      -->  ExI
+ExI     -->  MultiS
+MultiS  -->  CCC
+MultiS  -->  GoW
+CCC     -->  TB
+CCC     -->  MB
+MB      -->  CS
+GoW     -->  GOA
+GOA     ---> MB
+GOA     -->  MFA
+
+
+@enduml
