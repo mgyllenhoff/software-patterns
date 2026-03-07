@@ -23,11 +23,11 @@ rectangle "**Explorable Interface**\nGraphical; reversible commands" as ExI
 rectangle "**Multiple Settings**\nOne setting per open XML document" as MultiS
 rectangle "**Command Control Center**\nPersistent menu bar + toolbar" as CCC
 rectangle "**Garden of Windows**\nOne labeled window per document" as GoW
-rectangle "**Goal Oriented Areas**\nTree panel | Detail panel | Toolbar" as GOA
+rectangle "**Goal Oriented Areas**\nTree panel | Edit panel" as GOA
 rectangle "**Modeless Feedback Area**\nStatus bar: state, validation, format" as MFA
-rectangle "**Toolbar**\n..." as TB
-rectangle "**Menubar**\n..." as MB
-rectangle "**Clickable Symbols**\n..." as CS
+rectangle "**Toolbar**\nOne-click buttons for frequent file & XML commands" as TB
+rectangle "**Menubar**\nGrouped drop-down menus with keyboard shortcuts" as MB
+rectangle "**Clickable Symbols**\nRecognizable icons for all menu & toolbar actions" as CS
 
 
 
