@@ -20,7 +20,7 @@ private:
 
 public:
 	XMLParser(const std::string & filename, DOMBuilder * builder);
-	XMLParser(XMLTokenizer * tok, DOMBuilder * builder);
+	XMLParser(std::unique_ptr<XMLTokenizer> tok, DOMBuilder * builder); // Idiom: RAII
 
 	void	parse();
 	void	parseChildren();

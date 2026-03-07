@@ -31,9 +31,9 @@ void VirtualElement::materialize()
 
 	if (!hasDeferred) return;	// no children to parse
 
-	XMLTokenizer * tok = new XMLTokenizer(filename, childrenStart);
+	auto           tok = std::make_unique<XMLTokenizer>(filename, childrenStart); // Idiom: RAII
 	XMLDOMBuilder  builder(StandardDOMNodeFactory::Instance(), this);
-	XMLParser      parser(tok, &builder);
+	XMLParser      parser(std::move(tok), &builder); // Idiom: RAII
 	parser.parseChildren();
 }
 

@@ -8,9 +8,11 @@ XMLParser::XMLParser(const std::string & filename, DOMBuilder * builder)
 }
 
 // Injected tokenizer constructor
-// Takes ownership of a pre-seeked tokenizer (used by VirtualElement::materialize()).
-XMLParser::XMLParser(XMLTokenizer * tok, DOMBuilder * builder)
-	: tokenizer(tok), builder(builder)
+// Takes explicit ownership of a pre-seeked tokenizer via unique_ptr
+// The caller must std::move the unique_ptr in so the ownership transfers to this parser
+// Idiom: RAII
+XMLParser::XMLParser(std::unique_ptr<XMLTokenizer> tok, DOMBuilder * builder)
+	: tokenizer(std::move(tok)), builder(builder)
 {
 }
 

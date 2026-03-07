@@ -1,0 +1,105 @@
+@startuml RAII_Ownership
+
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam backgroundColor #FEFEFE
+skinparam TitleFontSize 15
+skinparam TitleFontStyle bold
+skinparam classAttributeIconSize 0
+
+skinparam class {
+  BackgroundColor       #EEF4FB
+  BorderColor           #1A6FAE
+  ArrowColor            #1A6FAE
+  HeaderBackgroundColor #1A6FAE
+  FontColor             black
+  HeaderFontColor       white
+}
+
+title RAII Idiom — Ownership Structure
+
+class VirtualElement {
+  + materialize()
+}
+
+class XMLParser {
+  - tokenizer : unique_ptr<XMLTokenizer>
+  --
+  + XMLParser(unique_ptr<XMLTokenizer>, DOMBuilder*)
+  + ~XMLParser()
+}
+
+class XMLTokenizer {
+  - file : std::fstream
+}
+
+VirtualElement ..> XMLParser     : creates on stack
+VirtualElement ..> XMLTokenizer  : make_unique<>()
+XMLParser      *-- XMLTokenizer  : owns via\nunique_ptr
+
+note right of XMLParser
+  unique_ptr destructor
+  automatically deletes
+  XMLTokenizer on scope exit
+end note
+
+@enduml
+
+
+@startuml RAII_Sequence
+
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam backgroundColor #FEFEFE
+skinparam TitleFontSize 15
+skinparam TitleFontStyle bold
+skinparam sequenceMessageAlign center
+
+skinparam participant {
+  BackgroundColor #EEF4FB
+  BorderColor     #1A6FAE
+  FontColor       black
+}
+skinparam sequence {
+  ArrowColor             #1A6FAE
+  LifeLineBorderColor    #1A6FAE
+  DividerBackgroundColor #1A6FAE
+  DividerFontColor       white
+}
+
+title RAII Idiom — VirtualElement::materialize()
+
+participant "materialize()" as MAT order 10
+participant "unique_ptr\n<XMLTokenizer>" as UP  order 20
+participant "XMLParser"                  as XP  order 30
+
+== Acquire ==
+
+MAT ->  UP : auto tok =\nstd::make_unique<XMLTokenizer>(filename, childrenStart)
+activate UP
+note right of UP : Resource acquired;\nno unowned raw pointer.
+
+== Transfer Ownership ==
+
+MAT ->  XP : XMLParser parser(std::move(tok), &builder)
+activate XP
+note right of XP : unique_ptr moved into\nXMLParser::tokenizer.\ntok is now null.
+deactivate UP
+
+== Use ==
+
+MAT ->  XP : parser.parseChildren()
+
+== Release (automatic) ==
+
+note over MAT : parser falls off\nthe stack.
+MAT ->  XP : [scope exit]
+XP  ->  UP : ~XMLParser()\ncalls ~unique_ptr()
+activate UP
+UP  ->  UP : deletes XMLTokenizer
+deactivate UP
+destroy XP
+
+note right of MAT : No explicit delete.\nException-safe.
+
+@enduml
