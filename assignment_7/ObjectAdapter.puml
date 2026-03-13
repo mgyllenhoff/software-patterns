@@ -1,0 +1,58 @@
+@startuml ObjectAdapter
+
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+skinparam class {
+    BackgroundColor #DDDDDD
+    BorderColor #888888
+    FontName Arial
+}
+
+class "testAdapter()" as Client <<Client>>
+interface "XERCES::DOMNode" as Target <<Target>> {
+    +getNodeName() : const XMLCh*
+    +getNodeType() : NodeType
+    +getChildNodes() : DOMNodeList*
+    +appendChild(DOMNode*) : DOMNode*
+    +insertBefore(DOMNode*, DOMNode*) : DOMNode*
+    +removeChild(DOMNode*) : DOMNode*
+}
+
+class "DOMNodeAdapter" as Adapter <<Adapter>> {
+    -_adaptee : dom::Node*
+    +getNodeName() : const XMLCh*
+    +getNodeType() : NodeType
+    +getChildNodes() : DOMNodeList*
+    +appendChild(DOMNode*) : DOMNode*
+    +insertBefore(DOMNode*, DOMNode*) : DOMNode*
+    +removeChild(DOMNode*) : DOMNode*
+}
+
+class "dom::Node" as Adaptee <<Adaptee>> {
+    +getNodeName() : const string&
+    +getNodeType() : short
+    +getChildNodes() : NodeList*
+    +appendChild(Node*) : Node*
+    +insertBefore(Node*, Node*) : Node*
+    +removeChild(Node*) : Node*
+}
+
+note bottom of Adapter #BBCCFF
+  appendChild(newChild) {
+    dom::Node* n =
+      dynamic_cast<DOMNodeImplBase*>
+        (newChild)->getDomNode();
+    return createDOMNodeAdapter(
+      _adaptee->appendChild(n));
+  }
+end note
+
+Client --> Target
+
+Adapter ..|> Target
+
+Adapter o--> Adaptee : «_adaptee»
+
+@enduml

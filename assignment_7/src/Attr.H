@@ -10,6 +10,7 @@ namespace dom
 	class Document;
 	class Element;
 
+	// Adapter Pattern: Adaptee
 	class Attr : public virtual Node
 	{
 	public:

@@ -136,6 +136,8 @@ class DOMUserDataHandler;
  *
  * @since DOM Level 1
  */
+
+// Adapter Pattern: Target
 class  DOMNode {
 protected:
     // -----------------------------------------------------------------------

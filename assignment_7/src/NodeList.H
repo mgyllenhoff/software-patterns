@@ -7,6 +7,7 @@ namespace dom
 {
 	class Node;
 
+	// Adapter Pattern: Adaptee
 	class NodeList : public std::list<Node *>
 	{
 	public:

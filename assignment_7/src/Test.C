@@ -6,10 +6,15 @@
 #include "XMLTokenizer.H"
 #include "XMLSerializer.H"
 #include "XMLValidator.H"
+#include "DOMDocumentAdapter.H"
+#include "DOMElementAdapter.H"
+#include "DOMAttrAdapter.H"
+#include "DOMTextAdapter.H"
 
 void testTokenizer(int argc, char** argv);
 void testSerializer(int argc, char** argv);
 void testValidator(int argc, char** argv);
+void testAdapter(int argc, char** argv);
 
 void printUsage(void)
 {
@@ -17,6 +22,7 @@ void printUsage(void)
 	printf("\tTest t [file] ...\n");
 	printf("\tTest s [file1] [file2]\n");
 	printf("\tTest v [file]\n");
+	printf("\tTest a [outfile]\n");
 }
 
 int main(int argc, char** argv)
@@ -40,6 +46,10 @@ int main(int argc, char** argv)
 	case 'V':
 	case 'v':
 		testValidator(argc, argv);
+		break;
+	case 'A':
+	case 'a':
+		testAdapter(argc, argv);
 		break;
 	}
 }
@@ -286,4 +296,79 @@ void testValidator(int argc, char** argv)
 	xmlSerializer.serializePretty(document);
 
 	// delete Document and tree.
+}
+
+void testAdapter(int argc, char** argv)
+{
+	if (argc < 3)
+	{
+		printUsage();
+		exit(0);
+	}
+
+	//
+	// Step 1: Create the Adaptee — the patterns_class DOM document
+	//
+	dom::Document * domDocument = new Document_Impl;
+
+	//
+	// Step 2: Wrap in the Adapter — expose it through the XERCES::DOMDocument interface
+	// (Target / Client Interface).  The client now works exclusively through the
+	// XERCES interface; it need not know that dom::Document is underneath.
+	//
+	XERCES::DOMDocument * xDoc = new DOMDocumentAdapter(domDocument);
+
+	printf("Adapter created.  Building DOM tree through XERCES::DOMDocument interface...\n");
+
+	//
+	// Step 3: Use the XERCES interface to build the same tree as testSerializer.
+	// All calls go through the adapter, which translates and delegates to the
+	// underlying dom::Document / dom::Element / dom::Attr / dom::Text objects.
+	//
+	// <document>
+	//   <element attribute="attribute value"/>
+	//   <element/>
+	//   <element attribute="attribute value" attribute2="attribute2 value">
+	//     Element Value
+	//   </element>
+	//   <element/>
+	// </document>
+	//
+
+	XERCES::DOMElement * xRoot = xDoc->createElement("document");
+	xDoc->appendChild(xRoot);
+
+	XERCES::DOMElement * xChild = xDoc->createElement("element");
+	XERCES::DOMAttr *   xAttr  = xDoc->createAttribute("attribute");
+	xAttr->setValue("attribute value");
+	xChild->setAttributeNode(xAttr);
+	xRoot->appendChild(xChild);
+
+	xChild = xDoc->createElement("element");
+	xRoot->appendChild(xChild);
+
+	xChild = xDoc->createElement("element");
+	xChild->setAttribute("attribute",  "attribute value");
+	xChild->setAttribute("attribute2", "attribute2 value");
+	XERCES::DOMText * xText = xDoc->createTextNode("Element Value");
+	xChild->appendChild(xText);
+	xRoot->appendChild(xChild);
+
+	xChild = xDoc->createElement("element");
+	xRoot->appendChild(xChild);
+
+	//
+	// Step 4: Verify the adapter routed everything correctly.
+	// The underlying dom::Document should now contain the full tree.
+	// Serialize it using XMLSerializer (which works on dom::Document *).
+	//
+	printf("Tree built via XERCES interface.  Verifying via dom::Document serialization...\n");
+
+	XMLSerializer xmlSerializer(argv[2]);
+	xmlSerializer.serializePretty(domDocument);
+
+	printf("Adapter test complete.  Serialized output written to: %s\n", argv[2]);
+
+	delete xDoc;
+	delete domDocument;
 }

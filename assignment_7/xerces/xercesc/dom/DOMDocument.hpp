@@ -60,6 +60,7 @@ class DOMNode;
  * <p>See also the <a href='http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113'>Document Object Model (DOM) Level 2 Core Specification</a>.
  */
 
+// Adapter Pattern: Target
 class DOMDocument: public DOMNode
 {
 

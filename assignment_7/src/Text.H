@@ -9,6 +9,7 @@ namespace dom
 {
 	class Document;
 
+	// Adapter Pattern: Adaptee
 	class Text : public virtual Node
 	{
 	public:

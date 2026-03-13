@@ -8,6 +8,7 @@ namespace dom
 {
 	class Document;
 
+	// Adapter Pattern: Adaptee
 	class Node
 	{
 	public:

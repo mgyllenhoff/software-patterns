@@ -9,6 +9,7 @@ namespace dom
 {
 	class Document;
 
+	// Adapter Pattern: Adaptee
 	class NamedNodeMap : public NodeList
 	{
 	public:

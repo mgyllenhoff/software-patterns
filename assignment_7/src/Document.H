@@ -12,6 +12,7 @@ namespace dom
 	class Attr;
 	class NodeList;
 
+	// Adapter Pattern: Adaptee
 	class Document : public virtual Node
 	{
 	public:
