@@ -1,0 +1,54 @@
+@startuml VirtualProxy
+!pragma layout smetana
+
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+
+' ── Client ────────────────────────────────────────────────────────────────────
+class PrettyXMLSerializer <<Client>> {
+}
+
+' ── Subject ───────────────────────────────────────────────────────────────────
+abstract class "dom::Element" <<Subject>> {
+  --
+  + {abstract} getFirstChild()  : dom::Node*
+  + {abstract} getLastChild()   : dom::Node*
+  + {abstract} getChildNodes()  : dom::NodeList*
+  + {abstract} hasChildNodes()  : bool
+}
+
+' ── RealSubject ───────────────────────────────────────────────────────────────
+class Element_Impl <<RealSubject>> {
+  --
+  + getFirstChild()  : dom::Node*
+  + getLastChild()   : dom::Node*
+  + getChildNodes()  : dom::NodeList*
+  + hasChildNodes()  : bool
+}
+
+' ── Proxy ─────────────────────────────────────────────────────────────────────
+class VirtualElement <<Proxy>> {
+  - filename       : string
+  - childrenStart  : streampos
+  - materialized   : bool
+  --
+  + getFirstChild()  : dom::Node*
+  + getLastChild()   : dom::Node*
+  + getChildNodes()  : dom::NodeList*
+  + hasChildNodes()  : bool
+}
+note right of VirtualElement::getFirstChild
+  materialize();
+  return Element_Impl::getFirstChild()
+end note
+
+' ── Relationships ─────────────────────────────────────────────────────────────
+PrettyXMLSerializer  -->  "dom::Element"
+
+"dom::Element"  <--  Element_Impl
+
+"dom::Element"  <--  VirtualElement
+
+Element_Impl    <--  VirtualElement
+
+@enduml
