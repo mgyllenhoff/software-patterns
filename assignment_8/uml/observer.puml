@@ -1,0 +1,63 @@
+@startuml Observer Pattern
+
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor White
+skinparam classBorderColor Black
+skinparam arrowColor Black
+skinparam noteBackgroundColor White
+skinparam noteBorderColor Black
+
+abstract class "dom::Subject" <<Subject>> {
+    + attach(Observer)
+    + detach(Observer)
+    + notify()
+}
+
+abstract class "dom::Observer" <<Observer>> {
+    + {abstract} update(Subject)
+}
+
+class DOMBuilder_Impl <<ConcreteSubject>> {
+    + getLastAction()
+    + getCurrentNodeName()
+    + getCurrentValue()
+    + getDepth()
+    + getTotalNodeCount()
+    --
+    - lastAction
+    - currentNodeName
+    - currentValue
+    - depth
+    - totalNodeCount
+}
+
+class ParseStatusObserver <<ConcreteObserver>> {
+    + update(Subject)
+    --
+    - builder
+}
+
+"dom::Subject" o-->"observers" "dom::Observer"
+"dom::Subject"  <|--  DOMBuilder_Impl
+"dom::Observer" <|--  ParseStatusObserver
+ParseStatusObserver "builder" -->  DOMBuilder_Impl
+
+note right of "dom::Subject"
+  notify():
+  for all o in observers {
+    o->update()
+  }
+end note
+
+note right of DOMBuilder_Impl
+  getLastAction():
+  return BuildAction
+end note
+
+note right of ParseStatusObserver
+  update():
+  BuildAction =
+    builder->getLastAction()
+end note
+
+@enduml

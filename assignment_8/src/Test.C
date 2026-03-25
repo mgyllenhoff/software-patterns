@@ -6,10 +6,13 @@
 #include "XMLTokenizer.H"
 #include "XMLSerializer.H"
 #include "XMLValidator.H"
+#include "DOMBuilder.H"
+#include "ParseStatusObserver.H"
 
 void testTokenizer(int argc, char** argv);
 void testSerializer(int argc, char** argv);
 void testValidator(int argc, char** argv);
+void testBuilder(int argc, char** argv);
 
 void printUsage(void)
 {
@@ -17,11 +20,12 @@ void printUsage(void)
 	printf("\tTest t [file] ...\n");
 	printf("\tTest s [file1] [file2]\n");
 	printf("\tTest v [file]\n");
+	printf("\tTest b\n");
 }
 
 int main(int argc, char** argv)
 {
-	if (argc < 3)
+	if (argc < 2)
 	{
 		printUsage();
 		exit(0);
@@ -40,6 +44,10 @@ int main(int argc, char** argv)
 	case 'V':
 	case 'v':
 		testValidator(argc, argv);
+		break;
+	case 'B':
+	case 'b':
+		testBuilder(argc, argv);
 		break;
 	}
 }
@@ -286,4 +294,49 @@ void testValidator(int argc, char** argv)
 	xmlSerializer.serializePretty(document);
 
 	// delete Document and tree.
+}
+
+void testBuilder(int argc, char** argv)
+{
+	//
+	// Construct the ConcreteSubject (Builder + Subject)
+	//
+	DOMBuilder_Impl		builder;
+
+	//
+	// Construct and attach the ConcreteObserver
+	//
+	ParseStatusObserver	observer(&builder);
+	builder.attach(&observer);
+
+	//
+	// Drive the Builder to construct:
+	// <html>
+	//   <head>
+	//     <title>Test Page</title>
+	//   </head>
+	//   <body class="container">
+	//     <p>Hello, Observer!</p>
+	//   </body>
+	// </html>
+	//
+	// Each call mutates the ConcreteSubject's state and notifies all observers.
+	//
+	builder.beginDocument();
+	  builder.beginElement("html");
+	    builder.beginElement("head");
+	      builder.beginElement("title");
+	        builder.addText("Test Page");
+	      builder.endElement();                 // </title>
+	    builder.endElement();                   // </head>
+	    builder.beginElement("body");
+	      builder.addAttribute("class", "container");
+	      builder.beginElement("p");
+	        builder.addText("Hello, Observer!");
+	      builder.endElement();                 // </p>
+	    builder.endElement();                   // </body>
+	  builder.endElement();                     // </html>
+	builder.endDocument();
+
+	builder.detach(&observer);
 }

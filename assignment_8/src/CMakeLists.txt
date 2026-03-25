@@ -8,6 +8,8 @@ target_sources(Patterns PUBLIC
 	Attr.H
 	Document.C
 	Document.H
+	DOMBuilder.C
+	DOMBuilder.H
 	Element.C
 	Element.H
 	NamedNodeMap.C
@@ -15,6 +17,9 @@ target_sources(Patterns PUBLIC
 	Node.C
 	Node.H
 	NodeList.H
+	Observer.H
+	ParseStatusObserver.C
+	ParseStatusObserver.H
 	Test.C
 	Text.C
 	Text.H
