@@ -1,0 +1,48 @@
+@startuml Mediator Pattern
+
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor White
+skinparam classBorderColor Black
+skinparam arrowColor Black
+skinparam noteBackgroundColor White
+skinparam noteBorderColor Black
+
+together {
+    abstract class "dom::Mediator" <<Mediator>> {
+        + {abstract} changed(Subject)
+    }
+}
+
+together {
+    class DOMParseMediator <<ConcreteMediator>> {
+        + changed(Subject)
+        + setObserver(ParseStatusObserver)
+        --
+        - builder
+        - statusObserver
+    }
+
+    class DOMBuilder_Impl <<ConcreteColleague1>> {
+        + getLastAction()
+        + getCurrentNodeName()
+        + getCurrentValue()
+        + getDepth()
+        + getTotalNodeCount()
+        --
+        - lastAction
+    }
+
+    class ParseStatusObserver <<ConcreteColleague2>> {
+        + update(Subject)
+        --
+        - mediator
+    }
+}
+
+"dom::Mediator"  <|--  DOMParseMediator
+DOMParseMediator                  -->  DOMBuilder_Impl
+DOMParseMediator                  -->  ParseStatusObserver
+DOMBuilder_Impl  "mediator"       -->  "dom::Mediator"
+ParseStatusObserver "mediator"    -->  "dom::Mediator"
+
+@enduml
