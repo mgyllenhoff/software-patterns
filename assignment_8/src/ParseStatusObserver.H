@@ -2,16 +2,17 @@
 #define PARSESTATUSOBSERVER_H
 
 #include "Observer.H"
-#include "DOMBuilder.H"
+#include "DOMParseMediator.H"
 
+// Mediator Pattern: Colleague
 // Observer Pattern: ConcreteObserver
 class ParseStatusObserver : public dom::Observer
 {
 private:
-	DOMBuilder_Impl *	builder;
+	DOMParseMediator *	mediator;	// Knows its Mediator, not DOMBuilder_Impl directly
 
 public:
-	ParseStatusObserver(DOMBuilder_Impl * b);
+	ParseStatusObserver(DOMParseMediator * m);
 	virtual ~ParseStatusObserver();
 
 	virtual void	update(dom::Subject * subject)	override;

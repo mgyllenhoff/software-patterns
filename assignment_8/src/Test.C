@@ -7,6 +7,7 @@
 #include "XMLSerializer.H"
 #include "XMLValidator.H"
 #include "DOMBuilder.H"
+#include "DOMParseMediator.H"
 #include "ParseStatusObserver.H"
 
 void testTokenizer(int argc, char** argv);
@@ -299,15 +300,25 @@ void testValidator(int argc, char** argv)
 void testBuilder(int argc, char** argv)
 {
 	//
-	// Construct the ConcreteSubject (Builder + Subject)
+	// Construct the ConcreteSubject (Builder + Subject colleague)
 	//
 	DOMBuilder_Impl		builder;
 
 	//
-	// Construct and attach the ConcreteObserver
+	// Construct the ConcreteMediator and attach it as Observer of the builder.
+	// The Mediator decouples the two Colleagues: DOMBuilder_Impl never knows
+	// about ParseStatusObserver, and ParseStatusObserver never knows about
+	// DOMBuilder_Impl — both communicate only through the Mediator.
 	//
-	ParseStatusObserver	observer(&builder);
-	builder.attach(&observer);
+	DOMParseMediator	mediator(&builder);
+	builder.attach(&mediator);
+
+	//
+	// Construct the display Colleague and register it with the Mediator.
+	// Two-step construction avoids a circular ctor dependency.
+	//
+	ParseStatusObserver	observer(&mediator);
+	mediator.setObserver(&observer);
 
 	//
 	// Drive the Builder to construct:
@@ -320,7 +331,8 @@ void testBuilder(int argc, char** argv)
 	//   </body>
 	// </html>
 	//
-	// Each call mutates the ConcreteSubject's state and notifies all observers.
+	// Each call mutates DOMBuilder_Impl's state and notifies the Mediator,
+	// which routes the update to ParseStatusObserver.
 	//
 	builder.beginDocument();
 	  builder.beginElement("html");
@@ -338,5 +350,5 @@ void testBuilder(int argc, char** argv)
 	  builder.endElement();                     // </html>
 	builder.endDocument();
 
-	builder.detach(&observer);
+	builder.detach(&mediator);
 }

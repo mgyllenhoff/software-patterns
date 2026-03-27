@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include "ParseStatusObserver.H"
 
-ParseStatusObserver::ParseStatusObserver(DOMBuilder_Impl * b)
-	: builder(b)
+ParseStatusObserver::ParseStatusObserver(DOMParseMediator * m)
+	: mediator(m)
 {
 }
 
@@ -12,12 +12,12 @@ ParseStatusObserver::~ParseStatusObserver()
 
 void ParseStatusObserver::update(dom::Subject * subject)
 {
-	(void)subject;	// Pull model: state is queried directly from the stored builder reference
-	DOMBuilder_Impl::BuildAction	action		= builder->getLastAction();
-	const std::string &		nodeName	= builder->getCurrentNodeName();
-	const std::string &		value		= builder->getCurrentValue();
-	int				depth		= builder->getDepth();
-	int				total		= builder->getTotalNodeCount();
+	(void)subject;	// State is queried from the Mediator, which delegates to DOMBuilder_Impl
+	DOMBuilder_Impl::BuildAction	action		= mediator->getLastAction();
+	const std::string &		nodeName	= mediator->getCurrentNodeName();
+	const std::string &		value		= mediator->getCurrentValue();
+	int				depth		= mediator->getDepth();
+	int				total		= mediator->getTotalNodeCount();
 
 	switch (action)
 	{

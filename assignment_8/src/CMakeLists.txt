@@ -10,6 +10,8 @@ target_sources(Patterns PUBLIC
 	Document.H
 	DOMBuilder.C
 	DOMBuilder.H
+	DOMParseMediator.C
+	DOMParseMediator.H
 	Element.C
 	Element.H
 	NamedNodeMap.C
@@ -17,6 +19,7 @@ target_sources(Patterns PUBLIC
 	Node.C
 	Node.H
 	NodeList.H
+	Mediator.H
 	Observer.H
 	ParseStatusObserver.C
 	ParseStatusObserver.H
