@@ -1,8 +1,6 @@
 #ifndef DOMPARSE_MEDIATOR_H
 #define DOMPARSE_MEDIATOR_H
 
-#include <string>
-
 #include "Mediator.H"
 #include "Observer.H"
 #include "DOMBuilder.H"
@@ -23,7 +21,7 @@ public:
 
 	void	setObserver(ParseStatusObserver * obs);
 
-	// dom::Mediator changes routes from DOMBuilder colleague to ParseStatusObserver colleague
+	// dom::Mediator routes changes from DOMBuilder colleague to ParseStatusObserver colleague
 	virtual void	changed(dom::Subject * colleague)	override;
 
 	// dom::Observer bridges Subject::notify() into Mediator::changed()

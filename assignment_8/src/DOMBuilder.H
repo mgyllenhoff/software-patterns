@@ -30,6 +30,7 @@ namespace dom
 
 // Builder Pattern: ConcreteBuilder
 // Observer Pattern: ConcreteSubject
+// Mediator Pattern: Colleague
 class DOMBuilder_Impl : public dom::Builder, public dom::Subject
 {
 public:
@@ -74,7 +75,7 @@ public:
 	virtual void		endDocument()						override;
 	virtual dom::Document *	getDocument()						override;
 
-	// State query accessors for ConcreteObserver (pull model)
+	// State query accessors for ConcreteMediator (pull model)
 	BuildAction		getLastAction()		const;
 	const std::string &	getCurrentNodeName()	const;
 	const std::string &	getCurrentValue()	const;
