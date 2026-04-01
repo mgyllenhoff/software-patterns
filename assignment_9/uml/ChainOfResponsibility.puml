@@ -1,0 +1,43 @@
+@startuml Chain of Responsibility
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle italic
+skinparam class {
+    BackgroundColor #D0D0D0
+    BorderColor #666666
+}
+
+class testChainOfResponsibility <<Client>> {
+    fires handleRequest("type1")
+    fires handleRequest("type2")
+    fires handleRequest("type3")
+}
+
+abstract class Element <<Handler>> {
+    + {abstract} handleRequest(messageType : string) : bool
+    + {abstract} getAttribute(name : string) : string
+    + {abstract} getParentNode() : Node*
+}
+
+class Element_Impl <<ConcreteHandler>> {
+    - attributes : NamedNodeMap_Impl
+    + handleRequest(messageType : string) : bool
+    + getAttribute(name : string) : string
+    + getParentNode() : Node*
+}
+
+note right of Element_Impl
+  handleRequest():
+    if getAttribute("message") == messageType
+      handle it (this element)
+    else
+      cast parent to Element*
+      delegate to parent->handleRequest()
+end note
+
+Element <|.. Element_Impl
+Element <-- Element : successor\n(getParentNode())
+
+testChainOfResponsibility --> Element : handleRequest()
+
+@enduml

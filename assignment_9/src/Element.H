@@ -12,6 +12,7 @@ namespace dom
 	class NodeList;
 	class Document;
 
+	// Chain of Responsibility: Handler
 	class Element : public virtual Node
 	{
 	public:
@@ -29,9 +30,12 @@ namespace dom
 
 		virtual dom::NamedNodeMap *	getAttributes(void)							= 0;
 		virtual bool			hasAttributes(void)							= 0;
+
+		virtual bool			handleRequest(const std::string & messageType)				= 0;
 	};
 };
 
+// Chain of Responsibility: ConcreteHandler
 class Element_Impl : public virtual dom::Element, Node_Impl
 {
 private:
@@ -55,6 +59,9 @@ public:
 
 	virtual dom::NamedNodeMap *	getAttributes(void)	{ return &attributes; }
 	virtual bool			hasAttributes(void)	{ return attributes.size() > 0; }
+
+	// Makes this class the ConcreteHandler
+	virtual bool			handleRequest(const std::string & messageType); 
 };
 
 #endif // ELEMENT_H

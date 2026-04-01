@@ -10,6 +10,7 @@
 void testTokenizer(int argc, char** argv);
 void testSerializer(int argc, char** argv);
 void testValidator(int argc, char** argv);
+void testChainOfResponsibility(void);
 
 void printUsage(void)
 {
@@ -17,11 +18,12 @@ void printUsage(void)
 	printf("\tTest t [file] ...\n");
 	printf("\tTest s [file1] [file2]\n");
 	printf("\tTest v [file]\n");
+	printf("\tTest c\n");
 }
 
 int main(int argc, char** argv)
 {
-	if (argc < 3)
+	if (argc < 2)
 	{
 		printUsage();
 		exit(0);
@@ -40,6 +42,10 @@ int main(int argc, char** argv)
 	case 'V':
 	case 'v':
 		testValidator(argc, argv);
+		break;
+	case 'C':
+	case 'c':
+		testChainOfResponsibility();
 		break;
 	}
 }
@@ -284,6 +290,49 @@ void testValidator(int argc, char** argv)
 	//
 	XMLSerializer	xmlSerializer(argv[2]);
 	xmlSerializer.serializePretty(document);
+
+	// delete Document and tree.
+}
+
+// Chain of Responsibility: Client
+void testChainOfResponsibility(void)
+{
+	//
+	// Build DOM tree matching this XML config:
+	// <handlers>
+	//   <handler message="type1">
+	//     <handler message="type2"/>
+	//     <handler message="type2"/>
+	//   </handler>
+	// </handlers>
+	//
+	dom::Document *	document	= new Document_Impl;
+	dom::Element *	root		= document->createElement("handlers");
+	document->appendChild(root);
+
+	dom::Element *	parent		= document->createElement("handler");
+	parent->setAttribute("message", "type1");
+	root->appendChild(parent);
+
+	dom::Element *	child1		= document->createElement("handler");
+	child1->setAttribute("message", "type2");
+	parent->appendChild(child1);
+
+	dom::Element *	child2		= document->createElement("handler");
+	child2->setAttribute("message", "type2");
+	parent->appendChild(child2);
+
+	//
+	// Fire events at child1 and chain propagates up to parent if needed
+	//
+	printf("Sending 'type2' to child1:\n\t");
+	child1->handleRequest("type2");		// child1 handles it directly
+
+	printf("Sending 'type1' to child1:\n\t");
+	child1->handleRequest("type1");		// child1 can't handle, so passes to parent
+
+	printf("Sending 'type3' to child1:\n\t");
+	child1->handleRequest("type3");		// nobody handles it
 
 	// delete Document and tree.
 }

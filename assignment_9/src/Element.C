@@ -1,6 +1,7 @@
 #include "Element.H"
 #include "Attr.H"
 #include "Document.H"
+#include <cstdio>
 
 Element_Impl::Element_Impl(const std::string & tagName, dom::Document * document) : Node_Impl(tagName, dom::Node::ELEMENT_NODE),
   attributes(document)
@@ -138,4 +139,18 @@ dom::Attr *		Element_Impl::setAttributeNode(dom::Attr * newAttr)
 	dynamic_cast<Node_Impl *>(dynamic_cast<Node *>(newAttr))->setParent(this);
 	attributes.push_back(newAttr);
 	return oldAttribute;
+}
+
+bool			Element_Impl::handleRequest(const std::string & messageType)
+{
+	if (getAttribute("message") == messageType)
+	{
+		printf("Element '%s' handled message '%s'\n", getTagName().c_str(), messageType.c_str());
+		return true;
+	}
+	// Get the successor
+	dom::Element * parent = dynamic_cast<dom::Element *>(getParentNode());
+	if (parent) return parent->handleRequest(messageType);
+	printf("Message '%s' was not handled\n", messageType.c_str());
+	return false;
 }
