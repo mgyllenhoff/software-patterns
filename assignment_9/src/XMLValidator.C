@@ -6,8 +6,8 @@ ValidChildren * XMLValidator::addSchemaElement(std::string element)
 
 	if (schemaElementIterator != schema.end())
 	{
-		schema.erase(schemaElementIterator);
 		delete *schemaElementIterator;
+		schema.erase(schemaElementIterator);
 	}
 
 	ValidChildren *	schemaElement	= 0;
@@ -49,6 +49,40 @@ bool XMLValidator::canAddAttribute(dom::Element * element, std::string newAttrib
 	std::vector<ValidChildren *>::iterator	schemaElement	= findSchemaElement(element->getTagName());
 
 	return schemaElement == schema.end() ? true : (*schemaElement)->childIsValid(newAttribute, true);
+}
+
+// Captures full schema state into a new Memento
+XMLValidatorMemento * XMLValidator::CreateMemento(void)
+{
+	XMLValidatorMemento * memento = new XMLValidatorMemento();
+	std::vector<XMLValidatorMemento::ValidChildrenSnapshot> s;
+	for (int i = 0; i < schema.size(); i++)
+	{
+		XMLValidatorMemento::ValidChildrenSnapshot snap;
+		snap.thisElement      = schema[i]->thisElement;
+		snap.validChildren    = schema[i]->validChildren;
+		snap.childIsAttribute = schema[i]->childIsAttribute;
+		snap.canHaveText      = schema[i]->_canHaveText;
+		s.push_back(snap);
+	}
+	memento->SetState(s);
+	return memento;
+}
+
+// Discards current schema and restores from Memento
+void XMLValidator::SetMemento(XMLValidatorMemento * memento)
+{
+	for (int i = 0; i < schema.size(); i++) delete schema[i];
+	schema.clear();
+	const std::vector<XMLValidatorMemento::ValidChildrenSnapshot> & s = memento->GetState();
+	for (int i = 0; i < s.size(); i++)
+	{
+		ValidChildren * vc  = new ValidChildren(s[i].thisElement);
+		vc->validChildren    = s[i].validChildren;
+		vc->childIsAttribute = s[i].childIsAttribute;
+		vc->_canHaveText     = s[i].canHaveText;
+		schema.push_back(vc);
+	}
 }
 
 void ValidChildren::addValidChild(const std::string & child, bool isAttribute)

@@ -1,0 +1,43 @@
+@startuml Memento
+
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor #D0D0D0
+    BorderColor #666666
+    ArrowColor #333333
+}
+skinparam note {
+    BackgroundColor #C8D8FF
+    BorderColor #8888CC
+}
+
+class testMemento <<Caretaker>>
+
+class XMLValidatorMemento <<Memento>> {
+    - state : vector<ValidChildrenSnapshot>
+    --
+    - GetState() : vector<ValidChildrenSnapshot>&
+    - SetState(s : vector<ValidChildrenSnapshot>)
+    - XMLValidatorMemento()
+}
+
+class XMLValidator <<Originator>> {
+    - schema : vector<ValidChildren*>
+    --
+    + CreateMemento() : XMLValidatorMemento*
+    + SetMemento(m : XMLValidatorMemento*)
+}
+
+testMemento *--> XMLValidatorMemento
+
+XMLValidator --> XMLValidatorMemento : «friend»
+
+note bottom of XMLValidator
+    CreateMemento():
+      return new XMLValidatorMemento(SetState(schema));
+    ....
+    SetMemento(m):
+      schema = m->GetState();
+end note
+
+@enduml

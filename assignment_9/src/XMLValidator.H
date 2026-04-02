@@ -7,6 +7,7 @@
 
 class ValidChildren
 {
+	friend class XMLValidator;	// Memento: Originator accesses private state for snapshot
 private:
 	std::string			thisElement;
 	std::vector<std::string>	validChildren;
@@ -23,6 +24,27 @@ public:
 	virtual bool		childIsValid(const std::string & child, bool isAttribute);
 };
 
+// Memento: Memento
+class XMLValidatorMemento
+{
+	friend class XMLValidator;	// Only the Originator may access state
+private:
+	struct ValidChildrenSnapshot
+	{
+		std::string			thisElement;
+		std::vector<std::string>	validChildren;
+		std::vector<bool>		childIsAttribute;
+		bool				canHaveText;
+	};
+	std::vector<ValidChildrenSnapshot>	state;
+
+	const std::vector<ValidChildrenSnapshot> &	GetState(void)						{ return state; }
+	void						SetState(const std::vector<ValidChildrenSnapshot> & s)	{ state = s; }
+
+	XMLValidatorMemento() {}	// only XMLValidator may construct
+};
+
+// Memento: Originator
 class XMLValidator
 {
 private:
@@ -37,4 +59,7 @@ public:
 	virtual bool					canAddElement(dom::Element * element, std::string newElement);
 	virtual bool					canAddText(dom::Element * element);
 	virtual bool					canAddAttribute(dom::Element * element, std::string newAttribute);
+
+	virtual XMLValidatorMemento *			CreateMemento(void);
+	virtual void					SetMemento(XMLValidatorMemento * memento);
 };

@@ -11,6 +11,7 @@ void testTokenizer(int argc, char** argv);
 void testSerializer(int argc, char** argv);
 void testValidator(int argc, char** argv);
 void testChainOfResponsibility(void);
+void testMemento(void);
 
 void printUsage(void)
 {
@@ -19,6 +20,7 @@ void printUsage(void)
 	printf("\tTest s [file1] [file2]\n");
 	printf("\tTest v [file]\n");
 	printf("\tTest c\n");
+	printf("\tTest m\n");
 }
 
 int main(int argc, char** argv)
@@ -46,6 +48,10 @@ int main(int argc, char** argv)
 	case 'C':
 	case 'c':
 		testChainOfResponsibility();
+		break;
+	case 'M':
+	case 'm':
+		testMemento();
 		break;
 	}
 }
@@ -335,4 +341,52 @@ void testChainOfResponsibility(void)
 	child1->handleRequest("type3");		// nobody handles it
 
 	// delete Document and tree.
+}
+
+// Memento: Caretaker
+void testMemento(void)
+{
+	//
+	// Configure Schema A: <document> contains <element>
+	//   (one part of the application sets up this validator)
+	//
+	XMLValidator	validator;
+	ValidChildren *	sc	= validator.addSchemaElement("");
+	sc->addValidChild("document", false);
+	sc	= validator.addSchemaElement("document");
+	sc->addValidChild("element", false);
+	sc	= validator.addSchemaElement("element");
+	sc->addValidChild("attribute", true);
+	sc->setCanHaveText(true);
+
+	printf("--- Schema A (document/element) ---\n");
+	printf("  Can root 'document': %s\n", validator.canRootElement("document") ? "yes" : "no");
+	printf("  Can root 'report':   %s\n", validator.canRootElement("report")   ? "yes" : "no");
+
+	// Caretaker saves the Originator's state before handing the
+	// validator off to another part of the application
+	XMLValidatorMemento *	memento	= validator.CreateMemento();
+
+	//
+	// A different part of the application reconfigures the same
+	// validator for an entirely different schema: <report> contains <section>
+	//
+	printf("\n--- Schema B (report/section) ---\n");
+	sc	= validator.addSchemaElement("");
+	sc->addValidChild("report", false);
+	sc	= validator.addSchemaElement("report");
+	sc->addValidChild("section", false);
+
+	printf("  Can root 'document': %s\n", validator.canRootElement("document") ? "yes" : "no");
+	printf("  Can root 'report':   %s\n", validator.canRootElement("report")   ? "yes" : "no");
+
+	// Caretaker hands the Memento back to the Originator to undo
+	// the reconfiguration and return to the original schema
+	printf("\n--- Restored Schema A from Memento ---\n");
+	validator.SetMemento(memento);
+
+	printf("  Can root 'document': %s\n", validator.canRootElement("document") ? "yes" : "no");
+	printf("  Can root 'report':   %s\n", validator.canRootElement("report")   ? "yes" : "no");
+
+	delete memento;
 }
