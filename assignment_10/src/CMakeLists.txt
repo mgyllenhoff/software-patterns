@@ -24,4 +24,12 @@ target_sources(Patterns PUBLIC
 	XMLTokenizer.H
 	XMLValidator.C
 	XMLValidator.H
+	XMLLoader.C
+	XMLLoader.H
+	XMLEditor.C
+	XMLEditor.H
+	XMLDisplay.C
+	XMLDisplay.H
+	XMLApplication.C
+	XMLApplication.H
 	)

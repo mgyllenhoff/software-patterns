@@ -1,3 +1,6 @@
+#ifndef XMLSERIALIZER_H
+#define XMLSERIALIZER_H
+
 #include <string>
 #include <fstream>
 #include <ios>
@@ -18,3 +21,5 @@ public:
 	virtual void		serializePretty(dom::Node * node);
 	virtual void		serializeMinimal(dom::Node * node);
 };
+
+#endif // XMLSERIALIZER_H

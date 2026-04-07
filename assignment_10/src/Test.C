@@ -6,10 +6,12 @@
 #include "XMLTokenizer.H"
 #include "XMLSerializer.H"
 #include "XMLValidator.H"
+#include "XMLApplication.H"
 
 void testTokenizer(int argc, char** argv);
 void testSerializer(int argc, char** argv);
 void testValidator(int argc, char** argv);
+void testApplication(int argc, char** argv);
 
 void printUsage(void)
 {
@@ -17,6 +19,7 @@ void printUsage(void)
 	printf("\tTest t [file] ...\n");
 	printf("\tTest s [file1] [file2]\n");
 	printf("\tTest v [file]\n");
+	printf("\tTest a [input_file] [output_file]\n");
 }
 
 int main(int argc, char** argv)
@@ -40,6 +43,10 @@ int main(int argc, char** argv)
 	case 'V':
 	case 'v':
 		testValidator(argc, argv);
+		break;
+	case 'A':
+	case 'a':
+		testApplication(argc, argv);
 		break;
 	}
 }
@@ -286,4 +293,17 @@ void testValidator(int argc, char** argv)
 	xmlSerializer.serializePretty(document);
 
 	// delete Document and tree.
+}
+
+// Shows the full Layered Architecture stack
+void testApplication(int argc, char** argv)
+{
+	if (argc < 4)
+	{
+		printUsage();
+		exit(0);
+	}
+
+	XMLApplication	app;
+	app.run(argv[2], argv[3]);
 }
