@@ -1,0 +1,126 @@
+@startuml
+title XML Display & Editing Application\nLayered Architecture — Sequence View\n(Load File + Edit + Save)
+
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceArrowColor #444444
+skinparam sequenceLifeLineBorderColor #444444
+skinparam sequenceGroupBorderColor #888888
+
+skinparam participant {
+  BackgroundColor white
+  BorderColor #444444
+}
+
+skinparam box {
+  BorderColor #888888
+  FontStyle bold
+}
+
+actor       User           as U
+box "Layer 4: Presentation" #D6EAF8
+  participant XMLApplication as App
+  participant XMLDisplay      as Disp
+end box
+box "Layer 3: Application Logic" #D5F5E3
+  participant XMLLoader    as Loader
+  participant XMLEditor    as Editor
+  participant XMLValidator as Val
+end box
+box "Layer 2: Domain" #FEF9E7
+  participant "dom::Document\n/ Element / Text" as DOM
+end box
+box "Layer 1: Infrastructure" #FDEDEC
+  participant XMLTokenizer  as Tok
+  participant XMLSerializer as Ser
+end box
+
+'──────────────────────────────────────────────────────────────────────────────
+' 1. STARTUP — load file
+'──────────────────────────────────────────────────────────────────────────────
+== Startup: Load XML File ==
+
+U    ->  App    : run("Test1.xml", "output.xml")
+App  ->  Loader : load("Test1.xml")
+activate Loader
+
+  Loader -> Tok : XMLTokenizer("Test1.xml")
+  activate Tok
+  Loader -> DOM : new Document_Impl()
+
+  loop until NULL_TOKEN
+    Loader -> Tok  : getNextToken()
+    Tok    --> Loader : XMLToken (ELEMENT / ATTRIBUTE /\nATTRIBUTE_VALUE / VALUE / ...)
+    Loader -> DOM  : createElement / createTextNode\nsetAttribute / appendChild
+  end
+
+  deactivate Tok
+  Loader --> App : dom::Document*
+deactivate Loader
+
+App  ->  Disp  : display(document)
+activate Disp
+  Disp -> DOM   : getNodeType / getChildNodes\ngetTagName / getAttributes\ngetName / getValue / getData\n<<read-only traversal>>
+  Disp --> App  : (tree printed to stdout;\nnodeIndex map populated)
+deactivate Disp
+
+App  -->  U    : [tree displayed with [N] indices]
+
+'──────────────────────────────────────────────────────────────────────────────
+' 2. EDIT — add child element
+'──────────────────────────────────────────────────────────────────────────────
+== Edit: Add Child Element ==
+
+U    ->  App    : choice = 2 (Add element)
+App  ->  U      : "Parent element index: "
+U    ->  App    : 1
+App  ->  Disp   : getNode(1) : dom::Node*
+Disp --> App    : dom::Node* (cast to dom::Element* in XMLApplication)
+
+App  ->  U      : "New element tag name: "
+U    ->  App    : "newElement"
+
+App  ->  Editor : addElement(doc, parent, "newElement")
+activate Editor
+
+  Editor -> Val : canAddElement(parent, "newElement")
+  Val    --> Editor : true
+
+  Editor -> DOM : doc->createElement("newElement")
+  DOM    --> Editor : dom::Element* newElem
+  Editor -> DOM : parent->appendChild(newElem)
+
+  Editor --> App : dom::Element* newElem
+deactivate Editor
+
+App  ->  Disp  : display(document)
+activate Disp
+  Disp -> DOM  : <<read-only traversal>>
+  Disp --> App : (updated tree printed;\nnodeIndex rebuilt)
+deactivate Disp
+
+App  --> U     : [tree redisplayed with <newElement> at [7]]
+
+'──────────────────────────────────────────────────────────────────────────────
+' 3. SAVE — persist to file
+'──────────────────────────────────────────────────────────────────────────────
+== Save: Write to File ==
+
+U    ->  App    : choice = 7 (Save)
+App  ->  Editor : save(document, "output.xml")
+activate Editor
+
+  Editor -> Ser : XMLSerializer("output.xml")
+  activate Ser
+  Editor -> Ser : serializePretty(document)
+  Ser    -> DOM : <<read-only traversal>>
+  Ser    --> Editor : (XML written to file)
+  deactivate Ser
+
+  Editor --> App : (done)
+deactivate Editor
+
+App  --> U : "Saved to output.xml"
+
+@enduml

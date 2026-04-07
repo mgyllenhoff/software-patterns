@@ -1,0 +1,148 @@
+@startuml
+title XML Display & Editing Application\nLayered Architecture — Component View
+
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam ArrowColor #444444
+skinparam NoteBorderColor #888888
+skinparam NoteBackgroundColor #FFFDE7
+
+skinparam package {
+  BorderColor #444444
+  FontStyle bold
+  FontSize 12
+}
+
+skinparam component {
+  BorderColor #444444
+  BackgroundColor white
+  FontSize 10
+}
+
+'──────────────────────────────────────────────────────────────────────────────
+' LAYER 4 — PRESENTATION
+'──────────────────────────────────────────────────────────────────────────────
+package "Layer 4: Presentation" #D6EAF8 {
+  [XMLApplication] as App
+  [XMLDisplay]     as Display
+}
+
+note top of App
+  **Constraint:** Only layer that reads stdin / writes stdout.
+  Translates user intent into Layer 3 calls.
+  Never mutates the Domain directly.
+end note
+
+'──────────────────────────────────────────────────────────────────────────────
+' LAYER 3 — APPLICATION LOGIC
+'──────────────────────────────────────────────────────────────────────────────
+package "Layer 3: Application Logic" #D5F5E3 {
+  [XMLLoader]    as Loader
+  [XMLEditor]    as Editor
+  [XMLValidator] as Validator
+}
+
+note right of Validator
+  **Constraint:** Schema rules determine
+  which elements/attributes are valid.
+  Empty schema → all operations permitted.
+end note
+
+note right of Loader
+  **Relaxed layering:** XMLLoader calls
+  both Layer 1 (XMLTokenizer) and
+  Layer 2 (dom::Document factory).
+  Exception: directly instantiates
+  Document_Impl to create the root document.
+end note
+
+'──────────────────────────────────────────────────────────────────────────────
+' LAYER 2 — DOMAIN
+'──────────────────────────────────────────────────────────────────────────────
+package "Layer 2: Domain" #FEF9E7 {
+  package "Interfaces (dom:: namespace)" #FDEBD0 {
+    [dom::Document] as IDoc
+    [dom::Element]  as IElem
+    [dom::Node]     as INode
+    [dom::Attr]     as IAttr
+    [dom::Text]     as IText
+  }
+  package "Implementations (*_Impl)" #FDFEFE {
+    [Document_Impl] as DImpl
+    [Element_Impl]  as EImpl
+    [Node_Impl]     as NImpl
+    [Attr_Impl]     as AImpl
+    [Text_Impl]     as TImpl
+  }
+}
+
+note bottom of INode
+  **Constraint:** Upper layers interact with
+  the Domain through dom:: interfaces.
+  The interface package is the stable Facade
+  exposed to Layers 3 and 4.
+  Composite pattern: every Node can hold
+  child Nodes, forming the XML tree.
+end note
+
+'──────────────────────────────────────────────────────────────────────────────
+' LAYER 1 — INFRASTRUCTURE
+'──────────────────────────────────────────────────────────────────────────────
+package "Layer 1: Infrastructure" #FDEDEC {
+  [XMLTokenizer]  as Tokenizer
+  [XMLSerializer] as Serializer
+}
+
+note bottom of Tokenizer
+  **Constraint:** No dependency on any
+  layer above. Knows only XML syntax,
+  not the DOM data model.
+end note
+
+'──────────────────────────────────────────────────────────────────────────────
+' RELATIONSHIPS
+'──────────────────────────────────────────────────────────────────────────────
+
+' Layer 4 internal peer call
+App     --> Display    : renders / resolves node index
+
+' Layer 4 → Layer 3
+App     --> Loader     : load(filename) : Document*
+App     --> Editor     : addElement / setAttribute\nremoveElement / addText / save
+
+' Layer 4 → Layer 2 (read-only: Display casts each node to its concrete interface)
+Display ..> INode      : getNodeType / getChildNodes\n<<read-only>>
+Display ..> IElem      : getTagName / getAttributes\n<<read-only>>
+Display ..> IAttr      : getName / getValue\n<<read-only>>
+Display ..> IText      : getData\n<<read-only>>
+
+' Layer 3 internal
+Editor  --> Validator  : canAddElement\ncanAddAttribute / canAddText
+
+' Layer 3 → Layer 2
+Loader  --> DImpl      : <<creates>> new Document_Impl()
+Loader  --> IDoc       : createElement / createTextNode\nappendChild (root)
+Loader  --> IElem      : setAttribute / appendChild
+Editor  --> IDoc       : createElement / createTextNode
+Editor  --> IElem      : setAttribute / removeAttribute\nhasAttribute / appendChild
+Editor  --> INode      : getParentNode / removeChild
+
+' Layer 3 → Layer 1  (relaxed: skips Layer 2 for I/O)
+Loader  --> Tokenizer  : getNextToken()
+Editor  --> Serializer : serializePretty()
+
+' Layer 2: *_Impl classes implement dom:: interfaces
+IDoc    <|.. DImpl     : implements
+IElem   <|.. EImpl     : implements
+INode   <|.. NImpl     : implements
+IAttr   <|.. AImpl     : implements
+IText   <|.. TImpl     : implements
+
+' Layer 2: Composite — all node types extend dom::Node
+IDoc  --|> INode
+IElem --|> INode
+IAttr --|> INode
+IText --|> INode
+
+@enduml

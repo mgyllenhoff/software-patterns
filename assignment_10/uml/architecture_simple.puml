@@ -1,0 +1,82 @@
+@startuml
+title XML Display & Editing Application\nLayered Architecture — Component View
+
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam ArrowColor #444444
+skinparam NoteBorderColor #888888
+skinparam NoteBackgroundColor #FFFDE7
+
+skinparam package {
+  BorderColor #444444
+  FontStyle bold
+  FontSize 13
+}
+
+skinparam component {
+  BorderColor #444444
+  BackgroundColor white
+  FontSize 11
+}
+
+package "Layer 4: Presentation" #D6EAF8 {
+  [XMLApplication]
+  [XMLDisplay]
+}
+
+package "Layer 3: Application Logic" #D5F5E3 {
+  [XMLLoader]
+  [XMLEditor]
+  [XMLValidator]
+}
+
+package "Layer 2: Domain" #FEF9E7 {
+  [Domain Model\n(dom::Node, Document,\nElement, Attr, Text)] as Domain
+}
+
+package "Layer 1: Infrastructure" #FDEDEC {
+  [XMLTokenizer]
+  [XMLSerializer]
+}
+
+note right of [XMLApplication]
+  **Constraint:** Only layer that
+  interacts with the user (stdin/stdout).
+  All mutations routed through Layer 3.
+end note
+
+note right of Domain
+  **Constraint:** Upper layers depend only
+  on the dom:: interfaces, not on the
+  *_Impl classes. Interfaces form a
+  stable Facade between layers.
+end note
+
+note right of [XMLTokenizer]
+  **Constraint:** No dependency on
+  any layer above.
+end note
+
+' Layer 4 → Layer 4 (peer)
+[XMLApplication] --> [XMLDisplay] : renders /\nresolves index
+
+' Layer 4 → Layer 3
+[XMLApplication] --> [XMLLoader]  : load file
+[XMLApplication] --> [XMLEditor]  : edit / save
+
+' Layer 4 → Layer 2 (read-only)
+[XMLDisplay] ..> Domain           : read-only traversal
+
+' Layer 3 → Layer 3 (peer)
+[XMLEditor]  --> [XMLValidator]   : validate before edit
+
+' Layer 3 → Layer 2
+[XMLLoader]  --> Domain           : build document tree
+[XMLEditor]  --> Domain           : mutate document tree
+
+' Layer 3 → Layer 1 (relaxed layering)
+[XMLLoader]  --> [XMLTokenizer]   : tokenize input file
+[XMLEditor]  --> [XMLSerializer]  : write output file
+
+@enduml
