@@ -1,19 +1,22 @@
 #include "XMLValidator.H"
 
+# Antipattern: Lava Flow
 ValidChildren * XMLValidator::addSchemaElement(std::string element)
 {
-	std::vector<ValidChildren *>::iterator	schemaElementIterator	= findSchemaElement(element);
+    std::vector<ValidChildren *>::iterator schemaElementIterator = findSchemaElement(element);
 
-	if (schemaElementIterator != schema.end())
-	{
-		schema.erase(schemaElementIterator);
-		delete *schemaElementIterator;
-	}
+    if (schemaElementIterator != schema.end())
+    {
+        ValidChildren * toDelete = *schemaElementIterator;  // save pointer first
+        schema.erase(schemaElementIterator);                // iterator now invalid, but pointer is safe
+        delete toDelete;                                    // delete through the saved pointer
+    }
 
-	ValidChildren *	schemaElement	= 0;
-	schema.push_back(schemaElement = new ValidChildren(element));
-	return schemaElement;
+    ValidChildren * schemaElement = 0;
+    schema.push_back(schemaElement = new ValidChildren(element));
+    return schemaElement;
 }
+
 
 std::vector<ValidChildren *>::iterator XMLValidator::findSchemaElement(std::string element)
 {
