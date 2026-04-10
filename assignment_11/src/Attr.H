@@ -37,6 +37,9 @@ public:
 	virtual const std::string &	getValue(void);
 	virtual void			setValue(const std::string & value);
 	virtual dom::Element *		getOwnerElement(void);
+
+	// Prototype Pattern: ConcretePrototype
+	virtual dom::Node *		clone() override;
 };
 
 #endif // ATTR_H

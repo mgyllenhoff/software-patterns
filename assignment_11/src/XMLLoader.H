@@ -4,6 +4,7 @@
 #include "Document.H"
 
 // Layer 3: Application Logic Layer
+// Command Pattern: Receiver
 class XMLLoader
 {
 public:

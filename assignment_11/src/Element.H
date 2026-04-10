@@ -55,6 +55,9 @@ public:
 
 	virtual dom::NamedNodeMap *	getAttributes(void)	{ return &attributes; }
 	virtual bool			hasAttributes(void)	{ return attributes.size() > 0; }
+
+	// Prototype Pattern: ConcretePrototype
+	virtual dom::Node *		clone() override;
 };
 
 #endif // ELEMENT_H

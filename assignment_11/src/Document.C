@@ -34,3 +34,8 @@ dom::Element * Document_Impl::getDocumentElement()
 
 	return 0;
 }
+
+dom::Node * Document_Impl::clone()
+{
+	return new Document_Impl();
+}

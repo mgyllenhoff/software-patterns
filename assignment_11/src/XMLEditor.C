@@ -63,3 +63,10 @@ void XMLEditor::save(dom::Document * doc, const std::string & filename)
 	XMLSerializer serializer(filename);
 	serializer.serializePretty(doc);
 }
+
+dom::Node * XMLEditor::cloneSubtree(dom::Node * source, dom::Element * targetParent)
+{
+	dom::Node * cloned = source->clone();
+	targetParent->appendChild(cloned);
+	return cloned;
+}

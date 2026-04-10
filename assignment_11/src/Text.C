@@ -1,4 +1,5 @@
 #include "Text.H"
+#include "Document.H"
 #include <stdexcept>
 
 Text_Impl::Text_Impl(const std::string value, dom::Document * document) : Node_Impl("", dom::Node::TEXT_NODE)
@@ -104,4 +105,9 @@ dom::Text *		Text_Impl::splitText(int offset)
 	{
 		throw dom::DOMException(dom::DOMException::INDEX_SIZE_ERR, "Index larget than Text node's value.");
 	}
+}
+
+dom::Node * Text_Impl::clone()
+{
+	return document->createTextNode(getValue());
 }

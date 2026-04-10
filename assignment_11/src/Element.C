@@ -139,3 +139,24 @@ dom::Attr *		Element_Impl::setAttributeNode(dom::Attr * newAttr)
 	attributes.push_back(newAttr);
 	return oldAttribute;
 }
+
+dom::Node * Element_Impl::clone()
+{
+	dom::Element * copy = document->createElement(getTagName());
+
+	// Clone each attribute by name/value so owner-document and parent checks inside setAttributeNode are not triggered
+	for (dom::NodeList::iterator i = attributes.begin(); i != attributes.end(); i++)
+	{
+		dom::Attr * attr = dynamic_cast<dom::Attr *>(*i.operator->());
+		copy->setAttribute(attr->getName(), attr->getValue());
+	}
+
+	// Recursively clone child nodes (Elements and Text nodes).
+	for (dom::NodeList::iterator i = getChildNodes()->begin(); i != getChildNodes()->end(); i++)
+	{
+		dom::Node * clonedChild = (*i.operator->())->clone();
+		copy->appendChild(clonedChild);
+	}
+
+	return copy;
+}

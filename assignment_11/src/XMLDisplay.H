@@ -5,6 +5,7 @@
 #include "Element.H"
 
 // Layer 4: Presentation Layer
+// Command Pattern: Receiver
 class XMLDisplay
 {
 private:

@@ -199,15 +199,56 @@ void AddTextCommand::execute()
 void HelpCommand::execute()
 {
 	printf("Commands:\n");
-	printf("  parse <filename>                  Load and display an XML file\n");
-	printf("  display                           Redisplay the current tree\n");
-	printf("  serialize pretty <filename>       Write pretty-printed XML to file\n");
-	printf("  serialize minimal <filename>      Write compact XML to file\n");
-	printf("  add-element <index> <tag>         Add child element to node at index\n");
-	printf("  remove-element <index>            Remove element at index\n");
-	printf("  set-attr <index> <name> <value>   Set attribute on element at index\n");
-	printf("  remove-attr <index> <name>        Remove attribute from element at index\n");
-	printf("  add-text <index> <text...>        Append text node to element at index\n");
-	printf("  help                              Show this help\n");
-	printf("  quit                              Exit the interpreter\n\n");
+	printf("  parse <filename>                       Load and display an XML file\n");
+	printf("  display                                Redisplay the current tree\n");
+	printf("  serialize pretty <filename>            Write pretty-printed XML to file\n");
+	printf("  serialize minimal <filename>           Write compact XML to file\n");
+	printf("  add-element <index> <tag>              Add child element to node at index\n");
+	printf("  remove-element <index>                 Remove element at index\n");
+	printf("  set-attr <index> <name> <value>        Set attribute on element at index\n");
+	printf("  remove-attr <index> <name>             Remove attribute from element at index\n");
+	printf("  add-text <index> <text...>             Append text node to element at index\n");
+	printf("  clone-subtree <src-index> <dst-index>  Deep-clone subtree and append to dst\n");
+	printf("  help                                   Show this help\n");
+	printf("  quit                                   Exit the interpreter\n\n");
+}
+
+CloneSubtreeCommand::CloneSubtreeCommand(AppContext & ctx,
+					 int sourceIndex,
+					 int targetParentIndex)
+	: ctx(ctx), sourceIndex(sourceIndex), targetParentIndex(targetParentIndex) {}
+
+void CloneSubtreeCommand::execute()
+{
+	if (!ctx.document)
+	{
+		printf("Error: no document loaded. Use 'parse <filename>' first.\n");
+		return;
+	}
+
+	// Resolve source
+	dom::Node * source = ctx.display.getNode(sourceIndex);
+	if (!source)
+	{
+		printf("Error: index %d not found.\n", sourceIndex);
+		return;
+	}
+	if (source->getNodeType() == dom::Node::DOCUMENT_NODE)
+	{
+		printf("Error: cannot clone the document root. Clone the document element instead.\n");
+		return;
+	}
+
+	// Resolve target parent (must be an Element)
+	dom::Element * targetParent = resolveElement(ctx, targetParentIndex);
+	if (!targetParent) return;
+
+	dom::Node * cloned = ctx.editor.cloneSubtree(source, targetParent);
+
+	if (cloned)
+	{
+		printf("Cloned subtree (index %d) appended to <%s>.\n",
+		       sourceIndex, targetParent->getTagName().c_str());
+		redisplay(ctx);
+	}
 }

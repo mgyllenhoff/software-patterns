@@ -8,6 +8,7 @@ namespace dom
 {
 	class Document;
 
+	// Prototype Pattern: Prototype
 	class Node
 	{
 	public:
@@ -17,6 +18,7 @@ namespace dom
 		static const short		TEXT_NODE	= 3;
 
 		virtual ~Node() {}
+		virtual Node *			clone()							= 0;
 
 		virtual const std::string &	getNodeName(void)				= 0;
 		virtual const std::string &	getNodeValue(void)				= 0;

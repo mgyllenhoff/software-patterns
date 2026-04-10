@@ -7,6 +7,7 @@
 #include "XMLValidator.H"
 
 // Layer 3: Application Logic Layer
+// Command Pattern: Receiver
 class XMLEditor
 {
 private:
@@ -30,6 +31,7 @@ public:
 				        dom::Element * element,
 				        const std::string & text);
 	virtual void		save(dom::Document * doc, const std::string & filename);
+	virtual dom::Node *	cloneSubtree(dom::Node * source, dom::Element * targetParent);
 };
 
 #endif // XMLEDITOR_H

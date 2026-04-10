@@ -66,6 +66,7 @@ class ConcreteCommands <<ConcreteCommand>> {
     RemoveAttrCommand
     AddTextCommand
     HelpCommand
+    CloneSubtreeCommand
     --
     +execute()
 }

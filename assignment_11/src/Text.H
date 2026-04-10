@@ -50,6 +50,9 @@ public:
 	virtual void			deleteData(int offset, int count);
 	virtual void			replaceData(int offset, int count, const std::string & arg);
 	virtual dom::Text *		splitText(int offset);
+
+	// Prototype Pattern: ConcretePrototype
+	virtual dom::Node *		clone() override;
 };
 
 #endif // TEXT_H

@@ -1,0 +1,85 @@
+@startuml PrototypePattern
+
+title Prototype
+
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor #AAAAAA
+    BorderColor     #444444
+    FontColor       black
+}
+skinparam note {
+    BackgroundColor #C8D8FF
+    BorderColor     #444444
+}
+skinparam arrow {
+    Color           #333333
+}
+
+' ─── Client ──────────────────────────────────────────────────────────────────
+
+class CloneSubtreeCommand <<Client>> {
+    -ctx : AppContext
+    -sourceIndex : int
+    -targetParentIndex : int
+    +execute()
+}
+
+' ─── Prototype ───────────────────────────────────────────────────────────────
+
+abstract class "dom::Node" <<Prototype>> {
+    {abstract} +clone()
+}
+
+' ─── ConcretePrototypes ──────────────────────────────────────────────────────
+
+class Element_Impl <<ConcretePrototype>> {
+    +clone()
+}
+
+class Text_Impl <<ConcretePrototype>> {
+    +clone()
+}
+
+class Attr_Impl <<ConcretePrototype>> {
+    +clone()
+}
+
+class Document_Impl <<ConcretePrototype>> {
+    +clone()
+}
+
+' ─── Relationships ───────────────────────────────────────────────────────────
+
+' Client holds a reference to Prototype and calls clone()
+CloneSubtreeCommand -right-> "dom::Node" : prototype
+
+' ConcretePrototypes inherit Prototype
+"dom::Node" <|-- Element_Impl
+"dom::Node" <|-- Text_Impl
+"dom::Node" <|-- Attr_Impl
+"dom::Node" <|-- Document_Impl
+
+' Client operation note
+note left of CloneSubtreeCommand
+    p = prototype->clone();
+end note
+
+' ConcretePrototype implementation notes
+note bottom of Element_Impl
+    return copy of self
+end note
+
+note bottom of Text_Impl
+    return copy of self
+end note
+
+note bottom of Attr_Impl
+    return copy of self
+end note
+
+note bottom of Document_Impl
+    return copy of self
+end note
+
+@enduml

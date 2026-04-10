@@ -100,4 +100,16 @@ public:
 	void execute() override;
 };
 
+// Command Pattern: ConcreteCommand
+// Prototype Pattern: Client
+class CloneSubtreeCommand : public Command
+{
+	AppContext &	ctx;
+	int		sourceIndex;
+	int		targetParentIndex;
+public:
+	CloneSubtreeCommand(AppContext & ctx, int sourceIndex, int targetParentIndex);
+	void execute() override;
+};
+
 #endif // XMLCOMMANDS_H

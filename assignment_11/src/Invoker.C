@@ -131,6 +131,14 @@ bool Invoker::dispatch(const std::string & line)
 			else
 				AddTextCommand(ctx, std::stoi(t3[1]), t3[2]).execute();
 		}
+		else if (cmd == "clone-subtree")
+		{
+			if (tokens.size() < 3)
+				printf("Usage: clone-subtree <source-index> <parent-index>\n");
+			else
+				CloneSubtreeCommand(ctx, std::stoi(tokens[1]),
+						    std::stoi(tokens[2])).execute();
+		}
 		else
 		{
 			printf("Unknown command '%s'. Type 'help' for a list of commands.\n",
