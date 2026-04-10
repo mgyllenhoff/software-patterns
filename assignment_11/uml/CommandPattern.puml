@@ -1,0 +1,100 @@
+@startuml CommandPattern
+
+title Command
+
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor #AAAAAA
+    BorderColor     #444444
+    FontColor       black
+}
+skinparam note {
+    BackgroundColor #C8D8FF
+    BorderColor     #444444
+}
+skinparam arrow {
+    Color           #333333
+}
+
+' ─── Row 1: Client | Invoker | Command ───────────────────────────────────────
+
+class XMLApplication <<Client>> {
+    +run()
+    +runInvoker()
+}
+
+class Invoker <<Invoker>> {
+    -ctx : AppContext
+    +run()
+    -dispatch()
+}
+
+abstract class Command <<Command>> {
+    {abstract} +execute()
+}
+
+' ─── Row 2: Receivers | ConcreteCommands ─────────────────────────────────────
+
+class Receivers <<Receiver>> {
+    --
+    XMLLoader
+    XMLEditor
+    XMLDisplay
+    XMLSerializer
+    --
+    +load()
+    +addElement()
+    +removeElement()
+    +setAttribute()
+    +removeAttribute()
+    +addText()
+    +display()
+    +getNode()
+    +serializePretty()
+    +serializeMinimal()
+}
+
+class ConcreteCommands <<ConcreteCommand>> {
+    -ctx : AppContext
+    --
+    ParseCommand
+    DisplayCommand
+    SerializeCommand
+    AddElementCommand
+    RemoveElementCommand
+    SetAttrCommand
+    RemoveAttrCommand
+    AddTextCommand
+    HelpCommand
+    --
+    +execute()
+}
+
+' ─── Relationships ───────────────────────────────────────────────────────────
+
+' Client → Invoker
+XMLApplication -right-> Invoker
+
+' Invoker ◆→ Command  (Invoker dispatches through the abstract interface)
+Invoker *-> Command
+
+' Client «creates» ConcreteCommands (through Invoker::dispatch at runtime)
+XMLApplication -> ConcreteCommands
+
+XMLApplication -> Receivers
+
+' ConcreteCommands inherit Command
+Command <|-- ConcreteCommands
+
+' ConcreteCommands → Receivers (via ctx)
+ConcreteCommands -left-> Receivers : ctx
+
+note right of ConcreteCommands
+    ctx.loader.load()
+    ctx.editor.addElement()
+    ctx.display.display()
+    ctx.serializer.serializePretty()
+    ...
+end note
+
+@enduml
