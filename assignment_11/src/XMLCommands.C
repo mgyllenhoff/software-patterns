@@ -124,7 +124,7 @@ void RemoveElementCommand::execute()
 	if (!elem) return;
 
 	if (!ctx.editor.removeElement(elem))
-		printf("Error: element has no parent (cannot remove document root).\n");
+		printf("Error: cannot remove element (document root element cannot be removed).\n");
 	else
 	{
 		printf("Removed <%s>.\n", elem->getTagName().c_str());

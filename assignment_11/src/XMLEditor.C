@@ -19,7 +19,10 @@ bool XMLEditor::removeElement(dom::Element * element)
 {
 	dom::Node * parent = element->getParentNode();
 	if (!parent)
-		return false;	// If root or unattached, cannot remove
+		return false;
+
+	if (parent->getNodeType() == dom::Node::DOCUMENT_NODE)
+		return false;
 
 	parent->removeChild(element);
 	return true;

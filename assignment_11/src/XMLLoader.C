@@ -3,6 +3,7 @@
 #include "Document.H"		// Layer 2
 #include "Element.H"		// Layer 2
 #include "Text.H"			// Layer 2
+#include <fstream>
 
 // Strip leading and trailing whitespace
 std::string XMLLoader::trimToken(const std::string & s)
@@ -33,6 +34,12 @@ std::string XMLLoader::cleanAttributeValue(const std::string & s)
 // State-machine XML parser
 dom::Document * XMLLoader::load(const std::string & filename)
 {
+	// Verify the file exists and is readable before constructing the document
+	std::ifstream check(filename);
+	if (!check.good())
+		return nullptr;
+	check.close();
+
 	XMLTokenizer	tokenizer(filename);
 	dom::Document *	doc	= new Document_Impl();
 
