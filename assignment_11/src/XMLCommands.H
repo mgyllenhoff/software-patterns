@@ -1,11 +1,11 @@
 #ifndef XMLCOMMANDS_H
 #define XMLCOMMANDS_H
 
-#include "ICommand.H"
+#include "Command.H"
 #include "AppContext.H"
 
 // Command Pattern: ConcreteCommand
-class ParseCommand : public ICommand
+class ParseCommand : public Command
 {
 	AppContext &	ctx;
 	std::string	filename;
@@ -15,7 +15,7 @@ public:
 };
 
 // Command Pattern: ConcreteCommand
-class DisplayCommand : public ICommand
+class DisplayCommand : public Command
 {
 	AppContext & ctx;
 public:
@@ -24,7 +24,7 @@ public:
 };
 
 // Command Pattern: ConcreteCommand
-class SerializeCommand : public ICommand
+class SerializeCommand : public Command
 {
 public:
 	enum class Mode { PRETTY, MINIMAL };
@@ -38,7 +38,7 @@ public:
 };
 
 // Command Pattern: ConcreteCommand
-class AddElementCommand : public ICommand
+class AddElementCommand : public Command
 {
 	AppContext &	ctx;
 	int		parentIndex;
@@ -49,7 +49,7 @@ public:
 };
 
 // Command Pattern: ConcreteCommand
-class RemoveElementCommand : public ICommand
+class RemoveElementCommand : public Command
 {
 	AppContext &	ctx;
 	int		index;
@@ -59,7 +59,7 @@ public:
 };
 
 // Command Pattern: ConcreteCommand
-class SetAttrCommand : public ICommand
+class SetAttrCommand : public Command
 {
 	AppContext &	ctx;
 	int		index;
@@ -72,7 +72,7 @@ public:
 };
 
 // Command Pattern: ConcreteCommand
-class RemoveAttrCommand : public ICommand
+class RemoveAttrCommand : public Command
 {
 	AppContext &	ctx;
 	int		index;
@@ -83,7 +83,7 @@ public:
 };
 
 // Command Pattern: ConcreteCommand
-class AddTextCommand : public ICommand
+class AddTextCommand : public Command
 {
 	AppContext &	ctx;
 	int		index;
@@ -94,7 +94,7 @@ public:
 };
 
 // Command Pattern: ConcreteCommand
-class HelpCommand : public ICommand
+class HelpCommand : public Command
 {
 public:
 	void execute() override;

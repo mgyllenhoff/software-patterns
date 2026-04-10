@@ -33,9 +33,9 @@ target_sources(Patterns PUBLIC
 	XMLApplication.C
 	XMLApplication.H
 	AppContext.H
-	ICommand.H
+	Command.H
 	XMLCommands.C
 	XMLCommands.H
-	CommandInterpreter.C
-	CommandInterpreter.H
+	Invoker.C
+	Invoker.H
 	)

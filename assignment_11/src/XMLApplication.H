@@ -7,7 +7,7 @@
 #include "XMLDisplay.H"
 #include "XMLValidator.H"
 #include "AppContext.H"
-#include "CommandInterpreter.H"
+#include "Invoker.H"
 
 // Command Pattern: Client
 // Layer 4: Presentation Layer
@@ -45,8 +45,10 @@ public:
 	virtual void	run(const std::string & inputFile,
 			    const std::string & outputFile);
 
-	// Command Pattern: Client entry point
-	virtual void	runInterpreter();
+	// Command Pattern: Client entry point.
+	// Constructs AppContext, creates Invoker, and runs the
+	// text-based command loop.
+	virtual void	runInvoker();
 };
 
 #endif // XMLAPPLICATION_H

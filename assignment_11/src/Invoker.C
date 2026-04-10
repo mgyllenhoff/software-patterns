@@ -1,15 +1,15 @@
+#include <cstdio>
 #include <iostream>
 #include <stdexcept>
 #include <climits>
-#include "CommandInterpreter.H"
+#include "Invoker.H"
 #include "XMLCommands.H"
 
-// Command Pattern: Invoker
-CommandInterpreter::CommandInterpreter(AppContext & ctx) : ctx(ctx) {}
+Invoker::Invoker(AppContext & ctx) : ctx(ctx) {}
 
 // Splits the line on whitespace into at most maxTokens tokens
-std::vector<std::string> CommandInterpreter::tokenize(const std::string & line,
-						       int maxTokens)
+std::vector<std::string> Invoker::tokenize(const std::string & line,
+					    int maxTokens)
 {
 	std::vector<std::string> tokens;
 	std::string::size_type pos = 0;
@@ -42,7 +42,7 @@ std::vector<std::string> CommandInterpreter::tokenize(const std::string & line,
 }
 
 // Parse one line, create the matching ConcreteCommand, and call execute()
-bool CommandInterpreter::dispatch(const std::string & line)
+bool Invoker::dispatch(const std::string & line)
 {
 	std::vector<std::string> tokens = tokenize(line, INT_MAX);
 
@@ -150,7 +150,7 @@ bool CommandInterpreter::dispatch(const std::string & line)
 }
 
 // Blocks until "quit" is entered
-void CommandInterpreter::run()
+void Invoker::run()
 {
 	std::string line;
 	printf("> ");

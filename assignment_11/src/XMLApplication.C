@@ -1,6 +1,6 @@
 #include "XMLApplication.H"
 #include "AppContext.H"
-#include "CommandInterpreter.H"
+#include "Invoker.H"
 
 // An empty XMLValidator schema means every canAdd* call returns true, so all edit operations are allowed
 XMLApplication::XMLApplication(void)
@@ -225,15 +225,17 @@ void XMLApplication::handleRemoveAttribute(void)
 	}
 }
 
-void XMLApplication::runInterpreter()
+// Command Pattern: Client
+// Wire Receivers into AppContext, hand it to the Invoker, and start the loop.
+void XMLApplication::runInvoker()
 {
 	printf("\nXML Command Interpreter\n");
 	printf("-----------------------\n");
 	printf("Type 'help' for a list of commands.\n\n");
 
 	AppContext ctx(document, loader, editor, display);
-	CommandInterpreter interpreter(ctx);
-	interpreter.run();
+	Invoker invoker(ctx);
+	invoker.run();
 
 	printf("Goodbye.\n");
 }
