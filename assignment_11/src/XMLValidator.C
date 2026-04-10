@@ -1,6 +1,6 @@
 #include "XMLValidator.H"
 
-# Antipattern: Lava Flow
+// Antipattern: Lava Flow
 ValidChildren * XMLValidator::addSchemaElement(std::string element)
 {
     std::vector<ValidChildren *>::iterator schemaElementIterator = findSchemaElement(element);

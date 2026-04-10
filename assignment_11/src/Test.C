@@ -12,6 +12,7 @@ void testTokenizer(int argc, char** argv);
 void testSerializer(int argc, char** argv);
 void testValidator(int argc, char** argv);
 void testApplication(int argc, char** argv);
+void testInterpreter(int argc, char** argv);
 
 void printUsage(void)
 {
@@ -20,11 +21,13 @@ void printUsage(void)
 	printf("\tTest s [file1] [file2]\n");
 	printf("\tTest v [file]\n");
 	printf("\tTest a [input_file] [output_file]\n");
+	printf("\tTest c [input_file]\n");
 }
 
 int main(int argc, char** argv)
 {
-	if (argc < 3)
+	// 'c' mode only needs the program name + mode flag
+	if (argc < 2 || (argc < 3 && argv[1][0] != 'c' && argv[1][0] != 'C'))
 	{
 		printUsage();
 		exit(0);
@@ -47,6 +50,10 @@ int main(int argc, char** argv)
 	case 'A':
 	case 'a':
 		testApplication(argc, argv);
+		break;
+	case 'C':
+	case 'c':
+		testInterpreter(argc, argv);
 		break;
 	}
 }
@@ -306,4 +313,15 @@ void testApplication(int argc, char** argv)
 
 	XMLApplication	app;
 	app.run(argv[2], argv[3]);
+}
+
+// An optional input file may be provided; use 'parse <file>' inside the
+// interpreter to load it (or any other file) once the session starts.
+void testInterpreter(int argc, char** argv)
+{
+	(void)argc;
+	(void)argv;
+
+	XMLApplication	app;
+	app.runInterpreter();
 }

@@ -1,4 +1,6 @@
 #include "XMLApplication.H"
+#include "AppContext.H"
+#include "CommandInterpreter.H"
 
 // An empty XMLValidator schema means every canAdd* call returns true, so all edit operations are allowed
 XMLApplication::XMLApplication(void)
@@ -221,6 +223,19 @@ void XMLApplication::handleRemoveAttribute(void)
 		  attrName.c_str(), elem->getTagName().c_str());
 		redraw();
 	}
+}
+
+void XMLApplication::runInterpreter()
+{
+	printf("\nXML Command Interpreter\n");
+	printf("-----------------------\n");
+	printf("Type 'help' for a list of commands.\n\n");
+
+	AppContext ctx(document, loader, editor, display);
+	CommandInterpreter interpreter(ctx);
+	interpreter.run();
+
+	printf("Goodbye.\n");
 }
 
 void XMLApplication::handleAddText(void)
