@@ -4,6 +4,10 @@
 #include "Element.H"
 #include "Attr.H"
 #include "Text.H"
+#include "NodeProcessor.H"
+#include "PrettyNodeProcessor.H"
+#include "MinimalNodeProcessor.H"
+#include "DOMIterator.H"
 
 // Template method: AbstractClass
 void XMLSerializer::serialize(dom::Node * node)
@@ -62,4 +66,45 @@ void XMLSerializer::serialize(dom::Node * node)
 		file << dynamic_cast<dom::Text *>(node)->getData();
 		writeAfterText(); // HOOK
 	}
+}
+
+void XMLSerializer::serializeWithProcessor(dom::Node * node, NodeProcessor & processor)
+{
+	DOMIterator *	it	= node->createIterator();
+
+	for (it->first(); !it->isDone(); it->next())
+	{
+		dom::Node *	current	= it->currentItem();
+
+		if (it->currentEvent() == DOMIterator::ENTERING)
+		{
+			if (dynamic_cast<dom::Document *>(current) != 0)
+				processor.processDocumentOpen(dynamic_cast<dom::Document *>(current));
+			else if (dynamic_cast<dom::Element *>(current) != 0)
+				processor.processElementOpen(dynamic_cast<dom::Element *>(current));
+			else if (dynamic_cast<dom::Text *>(current) != 0)
+				processor.processText(dynamic_cast<dom::Text *>(current));
+		}
+		else // LEAVING
+		{
+			if (dynamic_cast<dom::Document *>(current) != 0)
+				processor.processDocumentClose(dynamic_cast<dom::Document *>(current));
+			else if (dynamic_cast<dom::Element *>(current) != 0)
+				processor.processElementClose(dynamic_cast<dom::Element *>(current));
+		}
+	}
+
+	delete it;
+}
+
+void XMLSerializer::serializePretty(dom::Node * node, std::ostream & output)
+{
+	PrettyNodeProcessor	processor(output);	// ConcreteStrategy selected
+	serializeWithProcessor(node, processor);	// Context invokes strategy via iterator
+}
+
+void XMLSerializer::serializeMinimal(dom::Node * node, std::ostream & output)
+{
+	MinimalNodeProcessor	processor(output);	// ConcreteStrategy selected
+	serializeWithProcessor(node, processor);	// Context invokes strategy via iterator
 }

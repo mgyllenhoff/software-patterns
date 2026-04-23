@@ -36,4 +36,12 @@ target_sources(Patterns PUBLIC
 	XMLDOMBuilder.H
 	XMLParser.C
 	XMLParser.H
+	NodeProcessor.H
+	PrettyNodeProcessor.H
+	PrettyNodeProcessor.C
+	MinimalNodeProcessor.H
+	MinimalNodeProcessor.C
+	DOMIterator.H
+	DepthFirstDOMIterator.H
+	DepthFirstDOMIterator.C
 	)

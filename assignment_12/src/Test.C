@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <fstream>
+#include <iostream>
 #include "Attr.H"
 #include "Document.H"
 #include "Element.H"
@@ -6,6 +8,7 @@
 #include "XMLTokenizer.H"
 #include "PrettyXMLSerializer.H"
 #include "MinimalXMLSerializer.H"
+#include "XMLSerializer.H"
 #include "XMLValidator.H"
 #include "StandardDOMNodeFactory.H"
 #include "XMLDOMBuilder.H"
@@ -15,6 +18,7 @@ void testTokenizer(int argc, char** argv);
 void testSerializer(int argc, char** argv);
 void testValidator(int argc, char** argv);
 void testParser(int argc, char** argv);
+void testStrategySerializer(int argc, char** argv);
 
 void printUsage(void)
 {
@@ -23,6 +27,7 @@ void printUsage(void)
 	printf("\tTest s [file1] [file2]\n");
 	printf("\tTest v [file]\n");
 	printf("\tTest p [file1] [file2]\n");
+	printf("\tTest q [xmlfile] [outfile]   (Builder + Strategy demo)\n");
 }
 
 int main(int argc, char** argv)
@@ -50,6 +55,10 @@ int main(int argc, char** argv)
 	case 'P':
 	case 'p':
 		testParser(argc, argv);
+		break;
+	case 'Q':
+	case 'q':
+		testStrategySerializer(argc, argv);
 		break;
 	}
 }
@@ -322,4 +331,42 @@ void testParser(int argc, char** argv)
 
 	PrettyXMLSerializer	serializer(argv[3]);
 	serializer.serialize(document);
+}
+
+// Builder + Strategy: Client
+// Demonstrates both patterns working together:
+//   - Builder pattern: XMLParser (Director) drives XMLDOMBuilder (ConcreteBuilder)
+//     which uses StandardDOMNodeFactory (ConcreteFactory) to build the DOM tree.
+//   - Strategy pattern: XMLSerializer::serializePretty / serializeMinimal select
+//     a NodeProcessor ConcreteStrategy (Strategy 1 — node-data extraction) and
+//     accept any std::ostream as the output destination (Strategy 2 — output stream).
+void testStrategySerializer(int argc, char** argv)
+{
+	if (argc < 4)
+	{
+		printUsage();
+		exit(0);
+	}
+
+	// ---- Builder pattern: parse XML into a DOM tree ----
+	StandardDOMNodeFactory	factory;
+	XMLDOMBuilder		builder(&factory);
+	XMLParser		parser(argv[2], &builder);
+
+	parser.parse();
+
+	dom::Document *	document	= builder.getDocument();
+
+	// ---- Strategy pattern: serialize to a file (Strategy 2: std::ofstream) ----
+	// Strategy 1: PrettyNodeProcessor chosen by serializePretty()
+	{
+		std::ofstream	outFile(argv[3]);
+		XMLSerializer::serializePretty(document, outFile);
+	}
+
+	// ---- Strategy pattern: serialize to stdout (Strategy 2: std::cout) ----
+	// Strategy 1: MinimalNodeProcessor chosen by serializeMinimal()
+	printf("\n--- Minimal (Strategy pattern, stdout) ---\n");
+	XMLSerializer::serializeMinimal(document, std::cout);
+	printf("\n");
 }

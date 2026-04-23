@@ -3,16 +3,17 @@
 #include <string>
 #include <fstream>
 #include <ios>
+#include <ostream>
 
 #include "Node.H"
 
-// Template Method: AbstractClass
+class NodeProcessor;
+
 class XMLSerializer
 {
 protected:
 	std::fstream		file;
 
-	// Primitive methods
 	virtual void		writeDeclarationSuffix() = 0;		// "\n" vs nothing after declaration
 	virtual void		writeBeforeOpenTag() = 0;			// indentation vs nothing
 	virtual void		writeAfterAttributes(int attrCount) = 0;	// trailing " " vs nothing
@@ -28,6 +29,14 @@ public:
 		: file(filename.c_str(), std::ios_base::out) {}
 	virtual ~XMLSerializer() {}
 
-	// Invariant skeleton
 	void			serialize(dom::Node * node);
+
+	// Strategy Pattern: Context methods (static — usable without instantiation)
+	static void		serializePretty(dom::Node * node, std::ostream & output);
+	static void		serializeMinimal(dom::Node * node, std::ostream & output);
+
+private:
+	// Shared traversal engine: walks the DOM tree with a DepthFirstDOMIterator
+	// and dispatches ENTERING/LEAVING events to the supplied NodeProcessor strategy
+	static void		serializeWithProcessor(dom::Node * node, NodeProcessor & processor);
 };

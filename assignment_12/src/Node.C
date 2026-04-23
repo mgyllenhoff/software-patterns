@@ -1,4 +1,5 @@
 #include "Node.H"
+#include "DepthFirstDOMIterator.H"
 
 Node_Impl::Node_Impl(const std::string & n, short type) : name(n), nodeType(type), parent(0), document(0)
 {
@@ -150,6 +151,11 @@ const std::string &	Node_Impl::getLocalName(void)
 void Node_Impl::setParent(dom::Node * parent)
 {
 	this->parent	= parent;
+}
+
+DOMIterator * Node_Impl::createIterator(void)
+{
+	return new DepthFirstDOMIterator(this);
 }
 
 dom::Node *		Node_Impl::getSibling(int direction)
