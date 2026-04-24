@@ -39,6 +39,10 @@ public:
 	virtual const std::string &	getValue(void);
 	virtual void			setValue(const std::string & value);
 	virtual dom::Element *		getOwnerElement(void);
+
+	// Visitor Pattern: ConcreteElement
+	virtual void			acceptEnter(NodeVisitor & visitor);
+	virtual void			acceptLeave(NodeVisitor & visitor);
 };
 
 #endif // ATTR_H

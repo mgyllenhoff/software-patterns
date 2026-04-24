@@ -1,4 +1,5 @@
 #include "Text.H"
+#include "NodeVisitor.H"
 #include <stdexcept>
 
 Text_Impl::Text_Impl(const std::string value, dom::Document * document) : Node_Impl("", dom::Node::TEXT_NODE)
@@ -85,6 +86,16 @@ void			Text_Impl::replaceData(int offset, int count, const std::string & arg)
 	std::string	value	= getValue();
 
 	setValue(value.erase(offset, count).insert(offset, arg));
+}
+
+void Text_Impl::acceptEnter(NodeVisitor & visitor)
+{
+	visitor.visitText(this);
+}
+
+void Text_Impl::acceptLeave(NodeVisitor & visitor)
+{
+	(void)visitor;
 }
 
 dom::Text *		Text_Impl::splitText(int offset)

@@ -7,6 +7,9 @@
 #include "NodeProcessor.H"
 #include "PrettyNodeProcessor.H"
 #include "MinimalNodeProcessor.H"
+#include "NodeVisitor.H"
+#include "PrettyNodeVisitor.H"
+#include "MinimalNodeVisitor.H"
 #include "DOMIterator.H"
 
 // Template method: AbstractClass
@@ -107,4 +110,33 @@ void XMLSerializer::serializeMinimal(dom::Node * node, std::ostream & output)
 {
 	MinimalNodeProcessor	processor(output);	// ConcreteStrategy selected
 	serializeWithProcessor(node, processor);	// Context invokes strategy via iterator
+}
+
+void XMLSerializer::serializeWithVisitor(dom::Node * node, NodeVisitor & visitor)
+{
+	DOMIterator *	it	= node->createIterator();
+
+	for (it->first(); !it->isDone(); it->next())
+	{
+		dom::Node *	current	= it->currentItem();
+
+		if (it->currentEvent() == DOMIterator::ENTERING)
+			current->acceptEnter(visitor);	// first dispatch selects concrete accept()
+		else
+			current->acceptLeave(visitor);	// concrete accept() calls back into visitor
+	}
+
+	delete it;
+}
+
+void XMLSerializer::serializePrettyVisitor(dom::Node * node, std::ostream & output)
+{
+	PrettyNodeVisitor	visitor(output);	// ConcreteVisitor 1 selected
+	serializeWithVisitor(node, visitor);	// ObjectStructure drives traversal
+}
+
+void XMLSerializer::serializeMinimalVisitor(dom::Node * node, std::ostream & output)
+{
+	MinimalNodeVisitor	visitor(output);	// ConcreteVisitor 2 selected
+	serializeWithVisitor(node, visitor);	// ObjectStructure drives traversal
 }

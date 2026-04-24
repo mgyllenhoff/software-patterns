@@ -1,6 +1,7 @@
 #include "Element.H"
 #include "Attr.H"
 #include "Document.H"
+#include "NodeVisitor.H"
 
 Element_Impl::Element_Impl(const std::string & tagName, dom::Document * document) : Node_Impl(tagName, dom::Node::ELEMENT_NODE),
   attributes(document)
@@ -115,6 +116,16 @@ void			Element_Impl::setAttribute(const std::string & name, const std::string & 
 	dom::Attr *	attribute;
 	attributes.push_back(attribute = new Attr_Impl(name, value, dynamic_cast<Document_Impl *>(getOwnerDocument())));
 	dynamic_cast<Node_Impl *>(dynamic_cast<Node *>(attribute))->setParent(this);
+}
+
+void Element_Impl::acceptEnter(NodeVisitor & visitor)
+{
+	visitor.visitElementEnter(this);
+}
+
+void Element_Impl::acceptLeave(NodeVisitor & visitor)
+{
+	visitor.visitElementLeave(this);
 }
 
 dom::Attr *		Element_Impl::setAttributeNode(dom::Attr * newAttr)

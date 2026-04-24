@@ -8,6 +8,7 @@
 #include "Node.H"
 
 class NodeProcessor;
+class NodeVisitor;
 
 class XMLSerializer
 {
@@ -31,12 +32,12 @@ public:
 
 	void			serialize(dom::Node * node);
 
-	// Strategy Pattern: Context methods (static — usable without instantiation)
 	static void		serializePretty(dom::Node * node, std::ostream & output);
 	static void		serializeMinimal(dom::Node * node, std::ostream & output);
+	static void		serializePrettyVisitor(dom::Node * node, std::ostream & output);
+	static void		serializeMinimalVisitor(dom::Node * node, std::ostream & output);
 
 private:
-	// Shared traversal engine: walks the DOM tree with a DepthFirstDOMIterator
-	// and dispatches ENTERING/LEAVING events to the supplied NodeProcessor strategy
 	static void		serializeWithProcessor(dom::Node * node, NodeProcessor & processor);
+	static void		serializeWithVisitor(dom::Node * node, NodeVisitor & visitor);
 };

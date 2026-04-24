@@ -3,6 +3,7 @@
 #include "Text.H"
 #include "Attr.H"
 #include "NodeList.H"
+#include "NodeVisitor.H"
 
 Document_Impl::Document_Impl(void) : Node_Impl("", dom::Node::DOCUMENT_NODE)
 {
@@ -24,6 +25,16 @@ dom::Text *	Document_Impl::createTextNode(const std::string & data)
 dom::Attr *	Document_Impl::createAttribute(const std::string & name)
 {
 	return new Attr_Impl(name, this);
+}
+
+void Document_Impl::acceptEnter(NodeVisitor & visitor)
+{
+	visitor.visitDocumentEnter(this);
+}
+
+void Document_Impl::acceptLeave(NodeVisitor & visitor)
+{
+	visitor.visitDocumentLeave(this);
 }
 
 dom::Element * Document_Impl::getDocumentElement()

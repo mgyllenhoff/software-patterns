@@ -19,6 +19,7 @@ void testSerializer(int argc, char** argv);
 void testValidator(int argc, char** argv);
 void testParser(int argc, char** argv);
 void testStrategySerializer(int argc, char** argv);
+void testVisitorSerializer(int argc, char** argv);
 
 void printUsage(void)
 {
@@ -28,6 +29,7 @@ void printUsage(void)
 	printf("\tTest v [file]\n");
 	printf("\tTest p [file1] [file2]\n");
 	printf("\tTest q [xmlfile] [outfile]   (Builder + Strategy demo)\n");
+	printf("\tTest r [xmlfile] [outfile]   (Builder + Visitor demo)\n");
 }
 
 int main(int argc, char** argv)
@@ -59,6 +61,10 @@ int main(int argc, char** argv)
 	case 'Q':
 	case 'q':
 		testStrategySerializer(argc, argv);
+		break;
+	case 'R':
+	case 'r':
+		testVisitorSerializer(argc, argv);
 		break;
 	}
 }
@@ -333,13 +339,12 @@ void testParser(int argc, char** argv)
 	serializer.serialize(document);
 }
 
-// Builder + Strategy: Client
 // Demonstrates both patterns working together:
 //   - Builder pattern: XMLParser (Director) drives XMLDOMBuilder (ConcreteBuilder)
 //     which uses StandardDOMNodeFactory (ConcreteFactory) to build the DOM tree.
 //   - Strategy pattern: XMLSerializer::serializePretty / serializeMinimal select
 //     a NodeProcessor ConcreteStrategy (Strategy 1 — node-data extraction) and
-//     accept any std::ostream as the output destination (Strategy 2 — output stream).
+//     accept any std::ostream as the output destination (Strategy 2 — output stream)
 void testStrategySerializer(int argc, char** argv)
 {
 	if (argc < 4)
@@ -368,5 +373,39 @@ void testStrategySerializer(int argc, char** argv)
 	// Strategy 1: MinimalNodeProcessor chosen by serializeMinimal()
 	printf("\n--- Minimal (Strategy pattern, stdout) ---\n");
 	XMLSerializer::serializeMinimal(document, std::cout);
+	printf("\n");
+}
+
+// Demonstrates Builder pattern constructing the DOM tree, then the Visitor pattern
+// traversing it without dynamic_cast with each node's accept() dispatches to the
+// correct visit* method in the ConcreteVisitor (double dispatch)
+void testVisitorSerializer(int argc, char** argv)
+{
+	if (argc < 4)
+	{
+		printUsage();
+		exit(0);
+	}
+
+	// ---- Builder pattern: parse XML into a DOM tree ----
+	StandardDOMNodeFactory	factory;
+	XMLDOMBuilder		builder(&factory);
+	XMLParser		parser(argv[2], &builder);
+
+	parser.parse();
+
+	dom::Document *	document	= builder.getDocument();
+
+	// ---- Visitor pattern: pretty-print to a file ----
+	// accept() on each node calls back into PrettyNodeVisitor (double dispatch)
+	{
+		std::ofstream	outFile(argv[3]);
+		XMLSerializer::serializePrettyVisitor(document, outFile);
+	}
+
+	// ---- Visitor pattern: compact output to stdout ----
+	// accept() on each node calls back into MinimalNodeVisitor (double dispatch)
+	printf("\n--- Minimal (Visitor pattern, stdout) ---\n");
+	XMLSerializer::serializeMinimalVisitor(document, std::cout);
 	printf("\n");
 }

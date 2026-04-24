@@ -57,6 +57,10 @@ public:
 
 	virtual dom::NamedNodeMap *	getAttributes(void)	{ return &attributes; }
 	virtual bool			hasAttributes(void)	{ return attributes.size() > 0; }
+
+	// Visitor Pattern: ConcreteElement
+	virtual void			acceptEnter(NodeVisitor & visitor);
+	virtual void			acceptLeave(NodeVisitor & visitor);
 };
 
 #endif // ELEMENT_H

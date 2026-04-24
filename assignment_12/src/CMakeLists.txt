@@ -55,4 +55,9 @@ target_sources(Patterns PUBLIC
 	InsideAttributeState.C
 	InsideClosingTagState.H
 	InsideClosingTagState.C
+	NodeVisitor.H
+	PrettyNodeVisitor.H
+	PrettyNodeVisitor.C
+	MinimalNodeVisitor.H
+	MinimalNodeVisitor.C
 	)

@@ -5,6 +5,7 @@
 #include "NodeList.H"
 
 class DOMIterator;
+class NodeVisitor;
 
 namespace dom
 {
@@ -39,6 +40,10 @@ namespace dom
 		virtual bool			hasChildNodes(void)				= 0;
 		virtual const std::string &	getLocalName(void)				= 0;
 		virtual DOMIterator *		createIterator(void)				= 0;
+
+		// Visitor Pattern: Element
+		virtual void			acceptEnter(NodeVisitor & visitor)		= 0;
+		virtual void			acceptLeave(NodeVisitor & visitor)		= 0;
 	};
 
 	class DOMException
