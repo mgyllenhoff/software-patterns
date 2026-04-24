@@ -1,0 +1,62 @@
+@startuml StatePattern
+
+skinparam classBackgroundColor   #A8A8A8
+skinparam classBorderColor       #444444
+skinparam arrowColor             #333366
+skinparam classAttributeIconSize 0
+skinparam noteBackgroundColor    #C8D0F0
+skinparam noteBorderColor        #444444
+skinparam defaultFontName        Arial
+
+' ── Context ────────────────────────────────────────────────────────────────
+class XMLParser <<Context>> {
+  +parse()
+  ..
+  +setState(s : ParserState*)
+  +getBuilder() : DOMBuilder*
+  +setPendingAttributeName(name : string)
+  +getPendingAttributeName() : string
+  +clearPendingAttributeName()
+}
+
+' ── State ──────────────────────────────────────────────────────────────────
+abstract class ParserState <<State>> {
+  +{abstract} handle(context : XMLParser*,\n  type : TokenTypes, token : string)
+}
+
+' ── ConcreteStates ─────────────────────────────────────────────────────────
+class BetweenTagsState <<ConcreteState>> {
+  +handle(context : XMLParser*,\n  type : TokenTypes, token : string)
+}
+
+class InsidePrologState <<ConcreteState>> {
+  +handle(context : XMLParser*,\n  type : TokenTypes, token : string)
+}
+
+class InsideElementTagState <<ConcreteState>> {
+  +handle(context : XMLParser*,\n  type : TokenTypes, token : string)
+}
+
+class InsideAttributeState <<ConcreteState>> {
+  +handle(context : XMLParser*,\n  type : TokenTypes, token : string)
+}
+
+class InsideClosingTagState <<ConcreteState>> {
+  +handle(context : XMLParser*,\n  type : TokenTypes, token : string)
+}
+
+' ── Relationships ──────────────────────────────────────────────────────────
+XMLParser " " --> "*" ParserState : state
+
+ParserState <|-- BetweenTagsState
+ParserState <|-- InsidePrologState
+ParserState <|-- InsideElementTagState
+ParserState <|-- InsideAttributeState
+ParserState <|-- InsideClosingTagState
+
+' ── Request body note (mirrors the GoF "state->Handle();" annotation) ──────
+note left of XMLParser
+  state->handle(this, type, token)
+end note
+
+@enduml
