@@ -44,4 +44,15 @@ target_sources(Patterns PUBLIC
 	DOMIterator.H
 	DepthFirstDOMIterator.H
 	DepthFirstDOMIterator.C
+	ParserState.H
+	BetweenTagsState.H
+	BetweenTagsState.C
+	InsidePrologState.H
+	InsidePrologState.C
+	InsideElementTagState.H
+	InsideElementTagState.C
+	InsideAttributeState.H
+	InsideAttributeState.C
+	InsideClosingTagState.H
+	InsideClosingTagState.C
 	)

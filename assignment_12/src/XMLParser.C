@@ -1,9 +1,39 @@
 #include "XMLParser.H"
 
+#include "ParserState.H"
+#include "BetweenTagsState.H"
+#include "InsidePrologState.H"
+#include "InsideElementTagState.H"
+#include "InsideAttributeState.H"
+#include "InsideClosingTagState.H"
+
 XMLParser::XMLParser(const std::string & filename, DOMBuilder * builder)
-	: tokenizer(filename), builder(builder)
+	: tokenizer(filename),
+	  builder(builder),
+	  state(nullptr),
+	  betweenTagsState(new BetweenTagsState()),
+	  insidePrologState(new InsidePrologState()),
+	  insideElementTagState(new InsideElementTagState()),
+	  insideAttributeState(new InsideAttributeState()),
+	  insideClosingTagState(new InsideClosingTagState())
 {
+	state = betweenTagsState; // initial state
 }
+
+XMLParser::~XMLParser()
+{
+	delete betweenTagsState;
+	delete insidePrologState;
+	delete insideElementTagState;
+	delete insideAttributeState;
+	delete insideClosingTagState;
+}
+
+ParserState * XMLParser::getBetweenTagsState()		{ return betweenTagsState; }
+ParserState * XMLParser::getInsidePrologState()		{ return insidePrologState; }
+ParserState * XMLParser::getInsideElementTagState()	{ return insideElementTagState; }
+ParserState * XMLParser::getInsideAttributeState()	{ return insideAttributeState; }
+ParserState * XMLParser::getInsideClosingTagState()	{ return insideClosingTagState; }
 
 // Strip leading/trailing whitespace — ELEMENT regex may include leading spaces.
 std::string XMLParser::trimElementName(const std::string & token)
@@ -44,13 +74,10 @@ std::string XMLParser::trimWhitespace(const std::string & token)
 	return s;
 }
 
-// Loops over every token and dispatches to the appropriate builder method.
+// Eeach ConcreteState owns the behaviour for its region of the XML grammar and
+// transitions the context when a boundary token is encountered
 void XMLParser::parse()
 {
-	std::string	pendingAttributeName;
-	bool		inClosingTag	= false;
-	bool		inProlog	= false;
-
 	while (true)
 	{
 		XMLTokenizer::XMLToken * token = tokenizer.getNextToken();
@@ -58,83 +85,9 @@ void XMLParser::parse()
 		std::string raw = token->getToken();
 		delete token;
 
-		switch (type)
-		{
-		// End of file
-		case XMLTokenizer::XMLToken::NULL_TOKEN:
-			return;
+		if (type == XMLTokenizer::XMLToken::NULL_TOKEN)
+			return; // end of file
 
-		// Prolog: <?xml version="1.0" encoding="UTF-8"?>
-		// All tokens between PROLOG_START and PROLOG_END are skipped.
-		case XMLTokenizer::XMLToken::PROLOG_START:
-			inProlog = true;
-			break;
-
-		case XMLTokenizer::XMLToken::PROLOG_END:
-			inProlog = false;
-			break;
-
-		case XMLTokenizer::XMLToken::PROLOG_IDENTIFIER:
-			break;	// skip if xml identifier inside prolog
-
-		// Tag delimiters
-		case XMLTokenizer::XMLToken::TAG_START:
-			inClosingTag = false;
-			break;
-
-		case XMLTokenizer::XMLToken::TAG_CLOSE_START:
-			inClosingTag = true;
-			break;
-
-		// Element name
-		case XMLTokenizer::XMLToken::ELEMENT:
-			if (!inClosingTag)
-				builder->beginElement(trimElementName(raw));
-			// closing-tag name is informational — endElement() fires on TAG_END
-			break;
-
-		// Attribute name (leading spaces + trailing '=')
-		case XMLTokenizer::XMLToken::ATTRIBUTE:
-			if (!inProlog)
-				pendingAttributeName = trimAttributeName(raw);
-			break;
-
-		// Attribute value (surrounding quotes)
-		// Used both inside the prolog and for element attributes
-		case XMLTokenizer::XMLToken::ATTRIBUTE_VALUE:
-			if (!inProlog && !pendingAttributeName.empty())
-			{
-				builder->addAttribute(pendingAttributeName, trimAttributeValue(raw));
-				pendingAttributeName.clear();
-			}
-			break;
-
-		// Self-closing tag />
-		case XMLTokenizer::XMLToken::NULL_TAG_END:
-			builder->endElement();
-			break;
-
-		// Closing '>'
-		// Also closes the prolog (<?xml ... ?> ends with TAG_END, not PROLOG_END)
-		case XMLTokenizer::XMLToken::TAG_END:
-			if (inProlog)
-				inProlog = false;
-			else if (inClosingTag)
-				builder->endElement();
-			inClosingTag = false;
-			break;
-
-		// Text content between tags
-		case XMLTokenizer::XMLToken::VALUE:
-		{
-			std::string text = trimWhitespace(raw);
-			if (!text.empty())
-				builder->addText(text);
-			break;
-		}
-
-		default:
-			break;
-		}
+		state->handle(this, type, raw); // delegate to current ConcreteState
 	}
 }
