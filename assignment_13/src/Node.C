@@ -1,7 +1,8 @@
 #include "Node.H"
+#include "NodeFlyweight.H"
 #include "DepthFirstDOMIterator.H"
 
-Node_Impl::Node_Impl(const std::string & n, short type) : name(n), nodeType(type), parent(0), document(0)
+Node_Impl::Node_Impl(const NodeFlyweight * fw, short type) : flyweight(fw), nodeType(type), parent(0), document(0)
 {
 }
 
@@ -11,7 +12,8 @@ Node_Impl::~Node_Impl()
 
 const std::string &	Node_Impl::getNodeName(void)
 {
-	return name;
+	static const std::string	empty_name("");
+	return flyweight ? flyweight->getIntrinsicName() : empty_name;
 }
 
 const std::string &	Node_Impl::getNodeValue(void)
@@ -145,7 +147,13 @@ bool			Node_Impl::hasChildNodes(void)
 
 const std::string &	Node_Impl::getLocalName(void)
 {
-	return name;
+	static const std::string	empty_name("");
+	return flyweight ? flyweight->getIntrinsicName() : empty_name;
+}
+
+void Node_Impl::setFlyweight(const NodeFlyweight * fw)
+{
+	flyweight	= fw;
 }
 
 void Node_Impl::setParent(dom::Node * parent)

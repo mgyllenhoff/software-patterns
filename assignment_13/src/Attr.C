@@ -1,13 +1,16 @@
 #include "Attr.H"
 #include "NodeVisitor.H"
+#include "DOMFlyweightFactory.H"
+#include "AttrFlyweight.H"
 
-Attr_Impl::Attr_Impl(const std::string & tagName, dom::Document * document) : Node_Impl(tagName, dom::Node::ATTRIBUTE_NODE)
+Attr_Impl::Attr_Impl(const std::string & tagName, dom::Document * document)
+  : Node_Impl(DOMFlyweightFactory::getAttr(tagName), dom::Node::ATTRIBUTE_NODE)
 {
 	Node_Impl::document	= document;
 }
 
-Attr_Impl::Attr_Impl(const std::string & tagName, const std::string & value, dom::Document * document) :
-  Node_Impl(tagName, dom::Node::ATTRIBUTE_NODE)
+Attr_Impl::Attr_Impl(const std::string & tagName, const std::string & value, dom::Document * document)
+  : Node_Impl(DOMFlyweightFactory::getAttr(tagName), dom::Node::ATTRIBUTE_NODE)
 {
 	Node_Impl::document	= document;
 	setValue(value);

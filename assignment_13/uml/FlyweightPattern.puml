@@ -1,0 +1,100 @@
+@startuml FlyweightPattern
+
+skinparam classBackgroundColor   #A8A8A8
+skinparam classBorderColor       #444444
+skinparam arrowColor             #333366
+skinparam classAttributeIconSize 0
+skinparam noteBackgroundColor    #C8D0F0
+skinparam noteBorderColor        #444444
+skinparam defaultFontName        Arial
+
+' ── FlyweightFactory ──────────────────────────────────────────────────────────
+class DOMFlyweightFactory <<FlyweightFactory>> {
+  -elements : map<string, ElementFlyweight*>
+  -attrs    : map<string, AttrFlyweight*>
+  -texts    : map<string, TextFlyweight*>
+  ..
+  +getElement(tagName : string) : const ElementFlyweight*
+  +getAttr(attrName : string)   : const AttrFlyweight*
+  +getText(textData : string)   : const TextFlyweight*
+  +clear()
+}
+
+' ── Flyweight ─────────────────────────────────────────────────────────────────
+abstract class NodeFlyweight <<Flyweight>> {
+  +{abstract} getIntrinsicName() : string&
+}
+
+' ── ConcreteFlyweights ────────────────────────────────────────────────────────
+class ElementFlyweight <<ConcreteFlyweight>> {
+  -tagName  : string
+  ..
+  +getIntrinsicName() : string&
+}
+
+class AttrFlyweight <<ConcreteFlyweight>> {
+  -attrName : string
+  ..
+  +getIntrinsicName() : string&
+}
+
+class TextFlyweight <<ConcreteFlyweight>> {
+  -textData : string
+  ..
+  +getIntrinsicName() : string&
+}
+
+' ── UnsharedConcreteFlyweight ─────────────────────────────────────────────────
+class Document_Impl <<UnsharedConcreteFlyweight>> {
+}
+
+' ── Client ────────────────────────────────────────────────────────────────────
+' Represents Node_Impl (base) and its concrete subclasses
+' Element_Impl / Attr_Impl / Text_Impl, which each call the factory
+' in their constructor to obtain the appropriate flyweight.
+class Node_Impl <<Client>> {
+  -flyweight : const NodeFlyweight*
+  -value     : string
+  -parent    : Node*
+  -nodes     : NodeList
+  #document  : Document*
+  ..
+  +getNodeName() : string&
+  +setFlyweight(fw : const NodeFlyweight*)
+}
+
+' ── Relationships ─────────────────────────────────────────────────────────────
+' DOMFlyweightFactory "1" o--> "*" NodeFlyweight : flyweights
+
+' NodeFlyweight <|-- ElementFlyweight
+' NodeFlyweight <|-- AttrFlyweight
+' NodeFlyweight <|-- TextFlyweight
+' NodeFlyweight <|-- Document_Impl
+
+' Node_Impl --> ElementFlyweight
+' Node_Impl --> AttrFlyweight
+' Node_Impl --> TextFlyweight
+' Node_Impl --> Document_Impl
+' Node_Impl ..> DOMFlyweightFactory : getElement()\ngetAttr()\ngetText()
+DOMFlyweightFactory "1" o--> "*" NodeFlyweight : flyweights
+
+NodeFlyweight <|-- ElementFlyweight
+NodeFlyweight <|-- AttrFlyweight
+NodeFlyweight <|-- TextFlyweight
+
+Node_Impl --> NodeFlyweight
+Node_Impl <|-- Document_Impl
+Node_Impl ..> DOMFlyweightFactory : getElement()\ngetAttr()\ngetText()
+
+' ── Annotations ───────────────────────────────────────────────────────────────
+note top of DOMFlyweightFactory
+  if (pool[key] exists) {
+    return existing flyweight;
+  } else {
+    create new flyweight;
+    add it to pool;
+    return new flyweight;
+  }
+end note
+
+@enduml

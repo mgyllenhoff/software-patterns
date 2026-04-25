@@ -33,6 +33,9 @@ namespace dom
 	};
 };
 
+// Flyweight Pattern: Client
+//   Intrinsic state (from the shared ElementFlyweight pool): tagName
+//   Extrinsic state (stored in Node_Impl): attributes, children, parent, ownerDocument
 class Element_Impl : public virtual dom::Element, Node_Impl
 {
 private:

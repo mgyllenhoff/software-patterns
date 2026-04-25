@@ -10,7 +10,6 @@ namespace dom
 	class Document;
 	class Element;
 
-	// Abstract Factory: Product
 	class Attr : public virtual Node
 	{
 	public:
@@ -23,6 +22,9 @@ namespace dom
 	};
 };
 
+// Flyweight Pattern: Client
+//   Intrinsic state (from the shared AttrFlyweight pool): attrName
+//   Extrinsic state (stored in Node_Impl): value, ownerElement, ownerDocument 
 class Attr_Impl : public virtual dom::Attr, Node_Impl
 {
 protected:

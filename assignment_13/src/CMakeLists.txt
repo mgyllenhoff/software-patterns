@@ -60,4 +60,10 @@ target_sources(Patterns PUBLIC
 	PrettyNodeVisitor.C
 	MinimalNodeVisitor.H
 	MinimalNodeVisitor.C
+	NodeFlyweight.H
+	ElementFlyweight.H
+	AttrFlyweight.H
+	TextFlyweight.H
+	DOMFlyweightFactory.H
+	DOMFlyweightFactory.C
 	)

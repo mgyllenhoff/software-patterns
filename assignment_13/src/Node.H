@@ -6,6 +6,7 @@
 
 class DOMIterator;
 class NodeVisitor;
+class NodeFlyweight;
 
 namespace dom
 {
@@ -66,21 +67,22 @@ namespace dom
 	};
 };
 
-// Abstract Factory: ConcreteProduct
+// Flyweight Pattern: Client
+//   Intrinsic state (from flyweight->getIntrinsicName()):  tag name, attr name, text data
+//   Extrinsic state stored here: value, nodeType, parent, nodes, document
 class Node_Impl : public virtual dom::Node
 {
 private:
-	std::string	name;
-	std::string	value;
-	short		nodeType;
-	dom::Node *	parent;
-	dom::NodeList	nodes;
+	const NodeFlyweight *	flyweight; // reference to intrinsic state
+	std::string		value; // extrinsic
+	short			nodeType; // extrinsic
+	dom::Node *		parent; // extrinsic
+	dom::NodeList		nodes; // extrinsic
 
 	dom::Node *			getSibling(int direction);
 protected:
-	dom::Document *	document;
-
-	Node_Impl(const std::string & name, short type);
+	dom::Document *	document; // extrinsic
+	Node_Impl(const NodeFlyweight * fw, short type);
 public:
 	virtual ~Node_Impl();
 
@@ -101,8 +103,8 @@ public:
 	virtual dom::Node *		appendChild(dom::Node * newChild);
 	virtual bool			hasChildNodes(void);
 	virtual const std::string &	getLocalName(void);
-
 	virtual void setParent(dom::Node * parent);
+	void setFlyweight(const NodeFlyweight * fw);
 	virtual DOMIterator *		createIterator(void);
 };
 

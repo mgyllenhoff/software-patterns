@@ -12,7 +12,6 @@ namespace dom
 	class Attr;
 	class NodeList;
 
-	// Builder: Product
 	class Document : public virtual Node
 	{
 	public:
@@ -23,6 +22,7 @@ namespace dom
 	};
 };
 
+// Flyweight Pattern: UnsharedConcreteFlyweight
 class Document_Impl : public virtual dom::Document, public virtual Node_Impl
 {
 public:

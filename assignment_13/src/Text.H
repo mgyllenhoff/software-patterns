@@ -29,6 +29,9 @@ namespace dom
 	};
 };
 
+// Flyweight Pattern: Client
+//   Intrinsic state (from getNodeName()): textData
+//   Extrinsic state (stored in Node_Impl): parent, siblings, ownerDocument
 class Text_Impl : public virtual dom::Text, Node_Impl
 {
 protected:
@@ -40,8 +43,10 @@ public:
 
 	virtual const std::string &	getName(void);
 	virtual const std::string &	getData(void);
+	virtual const std::string &	getNodeValue(void);
 	virtual const std::string &	getValue(void);
 	virtual void			setData(const std::string & value);
+	virtual void			setNodeValue(const std::string & nodeValue);
 	virtual void			setValue(const std::string & value);
 	virtual int			getLength(void);
 	virtual const std::string &	substringData(int offset, int count);

@@ -1,10 +1,12 @@
 #include "Text.H"
 #include "NodeVisitor.H"
+#include "DOMFlyweightFactory.H"
+#include "TextFlyweight.H"
 #include <stdexcept>
 
-Text_Impl::Text_Impl(const std::string value, dom::Document * document) : Node_Impl("", dom::Node::TEXT_NODE)
+Text_Impl::Text_Impl(const std::string value, dom::Document * document)
+  : Node_Impl(DOMFlyweightFactory::getText(value), dom::Node::TEXT_NODE)
 {
-	setNodeValue(value);
 	Node_Impl::document	= document;
 }
 
@@ -19,7 +21,12 @@ const std::string &	Text_Impl::getName(void)
 
 const std::string &	Text_Impl::getData(void)
 {
-	return getNodeValue();
+	return getNodeName();
+}
+
+const std::string &	Text_Impl::getNodeValue(void)
+{
+	return getData();
 }
 
 const std::string &	Text_Impl::getValue(void)
@@ -29,7 +36,12 @@ const std::string &	Text_Impl::getValue(void)
 
 void			Text_Impl::setData(const std::string & value)
 {
-	setNodeValue(value);
+	Node_Impl::setFlyweight(DOMFlyweightFactory::getText(value));
+}
+
+void			Text_Impl::setNodeValue(const std::string & nodeValue)
+{
+	setData(nodeValue);
 }
 
 void			Text_Impl::setValue(const std::string & value)
