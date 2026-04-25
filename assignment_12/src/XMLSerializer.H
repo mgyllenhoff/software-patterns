@@ -34,10 +34,14 @@ public:
 
 	static void		serializePretty(dom::Node * node, std::ostream & output);
 	static void		serializeMinimal(dom::Node * node, std::ostream & output);
+
+	// Visitor Pattern: ObjectStructure (public interface part)
 	static void		serializePrettyVisitor(dom::Node * node, std::ostream & output);
 	static void		serializeMinimalVisitor(dom::Node * node, std::ostream & output);
 
 private:
 	static void		serializeWithProcessor(dom::Node * node, NodeProcessor & processor);
+
+	// Visitor Pattern: ObjectStructure (traversal engine)
 	static void		serializeWithVisitor(dom::Node * node, NodeVisitor & visitor);
 };

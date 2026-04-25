@@ -5,6 +5,7 @@
 #include "DOMIterator.H"
 #include "NodeList.H"
 
+// Visitor Pattern: ObjectStructure (enumeration part)
 class DepthFirstDOMIterator : public DOMIterator
 {
 private:
