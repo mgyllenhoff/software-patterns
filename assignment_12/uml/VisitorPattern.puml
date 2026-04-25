@@ -1,0 +1,99 @@
+@startuml VisitorPattern
+
+skinparam classBackgroundColor   #A8A8A8
+skinparam classBorderColor       #444444
+skinparam arrowColor             #333366
+skinparam classAttributeIconSize 0
+skinparam noteBackgroundColor    #C8D0F0
+skinparam noteBorderColor        #444444
+skinparam defaultFontName        Arial
+
+' ── Visitor ──────────────────────────────────────────────────────────────────
+abstract class NodeVisitor <<Visitor>> {
+  +{abstract} visitDocumentEnter(doc : Document*)
+  +{abstract} visitDocumentLeave(doc : Document*)
+  +{abstract} visitElementEnter(elem : Element*)
+  +{abstract} visitElementLeave(elem : Element*)
+  +{abstract} visitText(text : Text*)
+  +{abstract} visitAttr(attr : Attr*)
+}
+
+' ── ConcreteVisitors ─────────────────────────────────────────────────────────
+class PrettyNodeVisitor <<ConcreteVisitor>> {
+  -file : ostream&
+  -indentationLevel : int
+  ..
+  +visitDocumentEnter(doc : Document*)
+  +visitDocumentLeave(doc : Document*)
+  +visitElementEnter(elem : Element*)
+  +visitElementLeave(elem : Element*)
+  +visitText(text : Text*)
+  +visitAttr(attr : Attr*)
+}
+
+class MinimalNodeVisitor <<ConcreteVisitor>> {
+  -file : ostream&
+  ..
+  +visitDocumentEnter(doc : Document*)
+  +visitDocumentLeave(doc : Document*)
+  +visitElementEnter(elem : Element*)
+  +visitElementLeave(elem : Element*)
+  +visitText(text : Text*)
+  +visitAttr(attr : Attr*)
+}
+
+' ── Element ──────────────────────────────────────────────────────────────────
+abstract class "dom::Node" as Node <<Element>> {
+  +{abstract} acceptEnter(v : NodeVisitor&)
+  +{abstract} acceptLeave(v : NodeVisitor&)
+}
+
+' ── ConcreteElements ─────────────────────────────────────────────────────────
+class Document_Impl <<ConcreteElement>> {
+  +acceptEnter(v : NodeVisitor&)
+  +acceptLeave(v : NodeVisitor&)
+}
+
+class Element_Impl <<ConcreteElement>> {
+  +acceptEnter(v : NodeVisitor&)
+  +acceptLeave(v : NodeVisitor&)
+}
+
+class Text_Impl <<ConcreteElement>> {
+  +acceptEnter(v : NodeVisitor&)
+  +acceptLeave(v : NodeVisitor&)
+}
+
+class Attr_Impl <<ConcreteElement>> {
+  +acceptEnter(v : NodeVisitor&)
+  +acceptLeave(v : NodeVisitor&)
+}
+
+' ── ObjectStructure ──────────────────────────────────────────────────────────
+class XMLSerializer <<ObjectStructure>> {
+  +serializePrettyVisitor(node : Node*, out : ostream&)
+  +serializeMinimalVisitor(node : Node*, out : ostream&)
+  ..
+  -serializeWithVisitor(node : Node*, v : NodeVisitor&)
+}
+
+' ── Relationships ─────────────────────────────────────────────────────────────
+NodeVisitor <|-- PrettyNodeVisitor
+NodeVisitor <|-- MinimalNodeVisitor
+
+Node <|-- Document_Impl
+Node <|-- Element_Impl
+Node <|-- Text_Impl
+Node <|-- Attr_Impl
+
+XMLSerializer --> Node
+
+' ── Annotations (mirror the GoF accept()/Visit() body annotations) ───────────
+note left of Element_Impl
+  acceptEnter:
+    visitor.visitElementEnter(this)
+  acceptLeave:
+    visitor.visitElementLeave(this)
+end note
+
+@enduml
