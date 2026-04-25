@@ -66,4 +66,6 @@ target_sources(Patterns PUBLIC
 	TextFlyweight.H
 	DOMFlyweightFactory.H
 	DOMFlyweightFactory.C
+	Expression.H
+	Expression.C
 	)

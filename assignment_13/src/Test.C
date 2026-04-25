@@ -13,13 +13,15 @@
 #include "StandardDOMNodeFactory.H"
 #include "XMLDOMBuilder.H"
 #include "XMLParser.H"
+#include "DOMFlyweightFactory.H"
+#include "Expression.H"
 
 void testTokenizer(int argc, char** argv);
 void testSerializer(int argc, char** argv);
 void testValidator(int argc, char** argv);
-void testParser(int argc, char** argv);
 void testStrategySerializer(int argc, char** argv);
 void testVisitorSerializer(int argc, char** argv);
+void testInterpreter(int argc, char** argv);
 
 void printUsage(void)
 {
@@ -27,9 +29,7 @@ void printUsage(void)
 	printf("\tTest t [file] ...\n");
 	printf("\tTest s [file1] [file2]\n");
 	printf("\tTest v [file]\n");
-	printf("\tTest p [file1] [file2]\n");
-	printf("\tTest q [xmlfile] [outfile]   (Builder + Strategy demo)\n");
-	printf("\tTest r [xmlfile] [outfile]   (Builder + Visitor demo)\n");
+	printf("\tTest i [xmlfile]             (Builder + Interpreter demo)\n");
 }
 
 int main(int argc, char** argv)
@@ -54,17 +54,9 @@ int main(int argc, char** argv)
 	case 'v':
 		testValidator(argc, argv);
 		break;
-	case 'P':
-	case 'p':
-		testParser(argc, argv);
-		break;
-	case 'Q':
-	case 'q':
-		testStrategySerializer(argc, argv);
-		break;
-	case 'R':
-	case 'r':
-		testVisitorSerializer(argc, argv);
+	case 'I':
+	case 'i':
+		testInterpreter(argc, argv);
 		break;
 	}
 }
@@ -313,28 +305,36 @@ void testValidator(int argc, char** argv)
 	// delete Document and tree.
 }
 
-// Builder: Client
-void testParser(int argc, char** argv)
+
+// Interpreter Pattern: Client
+// Uses the Builder pattern to parse an XML file into a DOM tree, then
+// assembles an abstract syntax tree of Expression objects from that DOM tree
+// and invokes interpret() on the root to evaluate the expression
+void testInterpreter(int argc, char** argv)
 {
-	if (argc < 4)
+	if (argc < 3)
 	{
 		printUsage();
 		exit(0);
 	}
 
-	//
-	// Director (XMLParser) drives the ConcreteBuilder (XMLDOMBuilder) which
-	// uses the ConcreteFactory (StandardDOMNodeFactory) to create DOM nodes.
-	// argv[2] = input XML file, argv[3] = output pretty-printed XML file.
-	//
 	StandardDOMNodeFactory	factory;
 	XMLDOMBuilder		builder(&factory);
 	XMLParser		parser(argv[2], &builder);
-
 	parser.parse();
 
-	dom::Document *		document	= builder.getDocument();
+	dom::Document *	document = builder.getDocument();
 
-	PrettyXMLSerializer	serializer(argv[3]);
-	serializer.serialize(document);
+	// Build the abstract syntax tree from the DOM tree
+	Expression * root = buildExpression(document->getDocumentElement());
+	if (!root)
+	{
+		printf("Could not build expression tree from '%s'\n", argv[2]);
+		return;
+	}
+
+	Context context;
+	printf("Result: %d\n", root->interpret(context));
+
+	delete root;
 }
