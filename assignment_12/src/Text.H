@@ -29,6 +29,7 @@ namespace dom
 	};
 };
 
+// Visitor Pattern: ConcreteElement
 class Text_Impl : public virtual dom::Text, Node_Impl
 {
 protected:
@@ -50,8 +51,6 @@ public:
 	virtual void			deleteData(int offset, int count);
 	virtual void			replaceData(int offset, int count, const std::string & arg);
 	virtual dom::Text *		splitText(int offset);
-
-	// Visitor Pattern: ConcreteElement
 	virtual void			acceptEnter(NodeVisitor & visitor);
 	virtual void			acceptLeave(NodeVisitor & visitor);
 };

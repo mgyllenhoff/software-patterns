@@ -11,6 +11,7 @@ namespace dom
 {
 	class Document;
 
+	// Visitor Pattern: Element
 	// Abstract Factory: Product
 	class Node
 	{
@@ -41,7 +42,6 @@ namespace dom
 		virtual const std::string &	getLocalName(void)				= 0;
 		virtual DOMIterator *		createIterator(void)				= 0;
 
-		// Visitor Pattern: Element
 		virtual void			acceptEnter(NodeVisitor & visitor)		= 0;
 		virtual void			acceptLeave(NodeVisitor & visitor)		= 0;
 	};

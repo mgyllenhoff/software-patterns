@@ -23,6 +23,7 @@ namespace dom
 	};
 };
 
+// Visitor Pattern: ConcreteElement
 class Document_Impl : public virtual dom::Document, public virtual Node_Impl
 {
 public:
@@ -34,8 +35,6 @@ public:
 	virtual dom::Text *	createTextNode(const std::string & data);
 	virtual dom::Attr *	createAttribute(const std::string & name);
 	virtual dom::Element *	getDocumentElement();
-
-	// Visitor Pattern: ConcreteElement
 	virtual void		acceptEnter(NodeVisitor & visitor);
 	virtual void		acceptLeave(NodeVisitor & visitor);
 };
