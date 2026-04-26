@@ -1,0 +1,41 @@
+@startuml FacadePattern
+
+skinparam classBackgroundColor   #A8A8A8
+skinparam classBorderColor       #444444
+skinparam arrowColor             #333366
+skinparam classAttributeIconSize 0
+skinparam noteBackgroundColor    #C8D0F0
+skinparam noteBorderColor        #444444
+skinparam defaultFontName        Arial
+skinparam rectangleBorderColor   #444444
+skinparam rectangleFontSize      14
+
+' ── Subsystem boundary ────────────────────────────────────────────────────────
+rectangle "Subsystem" {
+
+  ' ── Facade ──────────────────────────────────────────────────────────────────
+  class XMLFacade <<Facade>> {
+    +tokenize(files : vector<string>)
+    +serialize(prettyOut : string, minimalOut : string)
+    +validate(prettyOut : string)
+    +interpret(inputFile : string)
+  }
+
+  ' ── Subsystem classes ───────────────────────────────────────────────────────
+  class XMLTokenizer <<Subsystem>>
+  class PrettyXMLSerializer <<Subsystem>>
+  class MinimalXMLSerializer <<Subsystem>>
+  class XMLValidator <<Subsystem>>
+  class XMLParser <<Subsystem>>
+  abstract class Expression <<Subsystem>>
+
+  ' ── Facade to subsystem ─────────────────────────────────────────────────────
+  XMLFacade --> XMLTokenizer
+  XMLFacade --> PrettyXMLSerializer
+  XMLFacade --> MinimalXMLSerializer
+  XMLFacade --> XMLValidator
+  XMLFacade --> XMLParser
+  XMLFacade --> Expression
+}
+
+@enduml

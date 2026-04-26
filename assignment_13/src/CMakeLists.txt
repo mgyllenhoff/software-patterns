@@ -68,4 +68,6 @@ target_sources(Patterns PUBLIC
 	DOMFlyweightFactory.C
 	Expression.H
 	Expression.C
+	XMLFacade.H
+	XMLFacade.C
 	)
